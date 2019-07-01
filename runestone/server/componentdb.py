@@ -28,7 +28,8 @@ from runestone.common.runestonedirective import RunestoneDirective
 try:
     dburl = get_dburl()
     engine = create_engine(dburl, client_encoding='utf8', convert_unicode=True)
-except RuntimeError as e:
+    engine.connect()
+except Exception as e:  # psycopg2.OperationalError
     dburl = None
     engine = None
     meta = None
@@ -37,7 +38,6 @@ else:
     # If no exceptions are raised, then set up the database.
     meta = MetaData()
     questions = Table('questions', meta, autoload=True, autoload_with=engine)
-    assignment_types = Table('assignment_types', meta, autoload=True, autoload_with=engine)
     assignment_questions = Table('assignment_questions', meta, autoload=True, autoload_with=engine)
     courses = Table('courses', meta, autoload=True, autoload_with=engine)
 
@@ -78,7 +78,11 @@ def addQuestionToDB(self):
 
         autograde = self.options.get('autograde', None)
         practice = self.options.get('practice', None)
-        topics = self.options.get('topics', "{}/{}".format(self.chapter, self.subchapter))
+        if ('topics' in self.options) and  (self.options['topics'] != ''):
+            topics = self.options['topics']
+        else:
+            topics = "{}/{}".format(self.chapter, self.subchapter)
+#        topics = self.options.get('topics', "{}/{}".format(self.chapter, self.subchapter))
 
         id_ = self.options['divid']
         sel = select([questions]).where(and_(questions.c.name == id_,
@@ -135,25 +139,6 @@ def getOrInsertQuestionForPage(base_course=None, name=None, is_private='F', ques
             author=author,
             difficulty=difficulty,
             chapter=chapter)
-        res = engine.execute(ins)
-        return res.inserted_primary_key[0]
-
-def getOrCreateAssignmentType(assignment_type_name, grade_type = None, points_possible = None, assignments_count = None, assignments_dropped = None):
-
-
-    # search for it in the DB
-    sel = select([assignment_types]).where(assignment_types.c.name == assignment_type_name)
-    res = engine.execute(sel).first()
-    if res:
-        return res['id']
-    else:
-        # create the assignment type
-        ins = assignment_types.insert().values(
-            name=assignment_type_name,
-            grade_type = grade_type,
-            points_possible = points_possible,
-            assignments_count = assignments_count,
-            assignments_dropped = assignments_dropped)
         res = engine.execute(ins)
         return res.inserted_primary_key[0]
 
@@ -216,7 +201,7 @@ def addAssignmentToDB(name = None, course_id = None, assignment_type_id = None, 
 
     return a_id
 
-def addHTMLToDB(divid, basecourse, htmlsrc):
+def addHTMLToDB(divid, basecourse, htmlsrc, feedback=None):
     if dburl:
         last_changed = datetime.now()
         sel = select([questions]).where(and_(questions.c.name == divid,
@@ -224,8 +209,8 @@ def addHTMLToDB(divid, basecourse, htmlsrc):
         res = engine.execute(sel).first()
         try:
             if res:
-                if res['htmlsrc'] != htmlsrc:
-                    stmt = questions.update().where(questions.c.id == res['id']).values(htmlsrc = htmlsrc, timestamp=last_changed)
+                if res['htmlsrc'] != htmlsrc or res['feedback'] != feedback:
+                    stmt = questions.update().where(questions.c.id == res['id']).values(htmlsrc = htmlsrc, feedback=feedback, timestamp=last_changed)
                     engine.execute(stmt)
         except UnicodeEncodeError:
             print("Bad character in directive {}".format(divid))

@@ -9,13 +9,24 @@ from paver.easy import sh
 from pkg_resources import resource_string, resource_filename, require
 import codecs
 
+if len(sys.argv) == 2:
+    if '--version' in sys.argv:
+        version = require("runestone")[0].version
+        print("Runestone version {}".format(version))
+        sys.exit()
+
+
 @click.group(chain=True)
-def cli():
+@click.option("--version", is_flag=True, help="More print version and exit")
+def cli(version):
     """
-    Usage: help for help
+    Usage: runestone [--version] subcommand
 
     """
-    pass
+    if version:
+        version = require("runestone")[0].version
+        print("Runestone version {}".format(version))
+        sys.exit()
 
 @cli.command()
 def init():
@@ -26,36 +37,49 @@ def init():
     print("This will create a new Runestone project in your current directory.")
     click.confirm("Do you want to proceed? ", abort=True, default=True)
     print("Next we need to gather a few pieces of information to create your configuration files")
-    conf_dict['project_name'] = click.prompt("Project name: (one word, no spaces)")
-    while ' ' in conf_dict['project_name']:
-        conf_dict['project_name'] = click.prompt("Project name: (one word, NO SPACES)")
-    conf_dict['build_dir'] = click.prompt("Path to build dir ", default="./build")
-    conf_dict['dest'] = click.prompt("Path to deploy built site ", default="../../static")
-    conf_dict['use_services'] = click.prompt("Use Runestone Web Services ", type=click.Choice(['true', 'false']), default="false")
+    conf_dict['dynamic_pages'] = click.prompt("Build book for dynamic page service?", type=bool, default=False)
+    if conf_dict['dynamic_pages'] == False:
+        conf_dict['use_services'] = click.prompt("Use Runestone Web Services ", type=bool, default=False)
+    else:
+        conf_dict['use_services'] = True
     conf_dict['author'] = click.prompt("Your Name ", default=getpass.getuser())
     conf_dict['project_title'] = click.prompt("Title for this project ", default="Runestone Default")
     conf_dict['python3'] = click.prompt("Use Simple Python3 Semantics ", default="false")
     conf_dict['default_ac_lang'] = click.prompt("Default ActiveCode language", default="python")
-    conf_dict['basecourse'] = conf_dict['project_name']
-    if conf_dict['use_services'] == "true":
-        conf_dict['login_req'] = click.prompt("Require login  ", default="false")
-        conf_dict['master_url'] = click.prompt("URL for ajax server ", default="http://127.0.0.1:8000")
-        conf_dict['logging'] = click.prompt("Log student actions? ", type=bool, default=True)
-        conf_dict['log_level'] = 10 if conf_dict['logging'] else 0
+    if conf_dict['use_services']:
+        conf_dict['project_name'] = 'os.path.basename(os.path.dirname(os.path.abspath(__file__)))'
+        conf_dict['build_dir'] = './build'
+        conf_dict['dest'] = './published'
+        conf_dict['login_req'] = click.prompt("Require login ", default="false")
+        conf_dict['master_url'] = ''
+        conf_dict['log_level'] = 10 if click.prompt("Log student actions? ", type=bool, default=True) else 0
         conf_dict['dburl'] = click.prompt("DataBase Connection URL", default="postgresql://user:password@localhost/runestone")
         conf_dict['enable_chatcodes'] = click.prompt("Enable Enable the chatcode feature)",type=bool, default=False)
+        # See the comments in ``conf.tmpl`` on server-side grading for an explanation of these conditions.
+        if conf_dict['log_level'] and conf_dict['login_req']:
+            conf_dict['server_side_grading'] = click.prompt("Grade questions on the server where possible?", type=bool, default=False)
+        else:
+            conf_dict['server_side_grading'] = False
+        conf_dict['allow_pairs'] = click.prompt("Enable Pair Programming feature(s)", type=bool, default=False)
     else:
+        conf_dict['project_name'] = click.prompt("Project name: (one word, no spaces)")
+        while ' ' in conf_dict['project_name']:
+            conf_dict['project_name'] = click.prompt("Project name: (one word, NO SPACES)")
+        # Add quotes around the project name for use in the template.
+        conf_dict['project_name'] = repr(conf_dict['project_name'])
+        conf_dict['build_dir'] = click.prompt("Path to build dir ", default="./build")
+        conf_dict['dest'] = click.prompt("Path to deploy built site ", default="../../static")
         conf_dict['login_req'] = "false"
         conf_dict['master_url'] = "http://127.0.0.1:8000"
-        conf_dict['logging'] = False
         conf_dict['log_level'] = 0
         conf_dict['dburl'] = ""
         conf_dict['enable_chatcodes'] = 'false'
+        conf_dict['server_side_grading'] = False
+        conf_dict['allow_pairs'] = 'false'
+    conf_dict['short_name'] = conf_dict['project_name']
     conf_dict['downloads_enabled'] = click.prompt("Enable inline Activecode downloads by default (single activecode downloads may be enabled with the :enabledownload: flag)", default="false")
 
     shutil.copytree(os.path.join(template_base_dir,'_sources'),'_sources')
-    shutil.copytree(os.path.join(template_base_dir,'_static'),'_static')
-    shutil.copytree(os.path.join(template_base_dir,'_templates'),'_templates')
     os.makedirs(conf_dict['build_dir'])
     paver_final = paver_stuff.decode('utf-8') % conf_dict
     config_final = config_stuff.decode('utf-8') % conf_dict
@@ -72,13 +96,17 @@ def init():
     with codecs.open('conf.py','w',encoding='utf8') as pvf:
         pvf.write(config_final)
 
-    print("Done.  Type runestone build to build your project")
+    print("Done. Type runestone build to build your project")
 
 @cli.command()
 @click.option('--all/--not-all', default=False, help="build all")
-def build(all):
+@click.option('--wd', default=None, help="change working directory before build")
+def build(all, wd):
     from paver.tasks import main as paver_main
-    os.chdir(findProjectRoot())
+    if wd:
+        os.chdir(wd)
+    else:
+        os.chdir(findProjectRoot())
     sys.path.insert(0, os.getcwd())
     version = require("runestone")[0].version
     print("Building with Runestone {}".format(version))
@@ -161,25 +189,22 @@ def deploy(dest):
 
 from runestone import cmap
 
-@cli.command(short_help="type runestone help for help")
-@click.argument('command', nargs=-1)
-def help(command=None):
-    if not command:
-        print("""Available Commands:
-build  [--all]   * build the current project
-deploy           * deploy the current proejct using rsync
-serve [--port]   * start a simple webserver for the current project
-help             * list all runestone directives
-update           * Get a new copy of the _templates folder
+@cli.command(short_help="type runestone doc directive to get help on directive")
+@click.option("--list", is_flag=True, help="List all commands")
+@click.argument('directive', nargs=-1)
+def doc(directive=None,list=None):
+    """
+    Show Format and all options for a runestone directive
+    """
+    if list:
+        print("Runestone Directives List")
+        print("  ", "\n   ".join(sorted(cmap.keys())))
+        return
 
-or type help <directive> for doc on a runestone directive""")
-    else:
-        command = command[0]
-        if command in cmap:
-            print(cmap[command].__doc__)
-        elif command == 'list':
-            print("Runestone Directives List")
-            print("  ", "\n   ".join(sorted(cmap.keys())))
+    if directive:
+        directive = directive[0]
+        if directive in cmap:
+            print(cmap[directive].__doc__)
         else:
             print("""Unknown Directive.  Possible values are""")
             print("  ", "\n   ".join(sorted(cmap.keys())))
@@ -213,7 +238,7 @@ def main(args=None):
     cli.add_command(build)
     cli.add_command(serve)
     cli.add_command(deploy)
-    cli.add_command(help)
+    cli.add_command(doc)
     cli.add_command(update)
     cli()
 
@@ -226,7 +251,6 @@ def findProjectRoot():
         prevdir = start
         start = os.path.dirname(start)
     raise IOError("You must be in a runestone project to run runestone")
-
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))

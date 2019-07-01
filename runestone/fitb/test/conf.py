@@ -19,6 +19,7 @@ import sys, os
 #sys.path.insert(0, os.path.abspath('../modules'))
 
 from runestone import runestone_static_dirs, runestone_extensions
+import pkg_resources
 
 # -- General configuration -----------------------------------------------------
 
@@ -29,10 +30,11 @@ from runestone import runestone_static_dirs, runestone_extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.mathjax'] + runestone_extensions()
 
-#,'runestone.video','runestone.reveal','runestone.poll','runestone.tabbedStuff','runestone.disqus','runestone.codelens','runestone.activecode', 'runestone.assess', 'runestone.animation','runestone.meta', 'runestone.parsons', 'runestone.blockly', 'runestone.livecode']
+#,'runestone.video','runestone.reveal','runestone.poll','runestone.tabbedStuff','runestone.disqus','runestone.codelens','runestone.activecode', 'runestone.assess', 'runestone.animation','runestone.meta', 'runestone.parsons', 'runestone.blockly', 'runestone.livecode','runestone.accessibility']
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = [pkg_resources.resource_filename('runestone', 'common/project_template/_templates')]
+
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -45,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Runestone Interactive Overview'
-copyright = '2015 jczetta'
+copyright = '2017 bjones'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -90,6 +92,12 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
+# `keep_warnings <http://www.sphinx-doc.org/en/stable/config.html#confval-keep_warnings>`_:
+# If true, keep warnings as “system message” paragraphs in the built documents.
+# Regardless of this setting, warnings are always written to the standard error
+# stream when sphinx-build is run.
+keep_warnings = True
+
 # `rst_prolog <http://www.sphinx-doc.org/en/stable/config.html#confval-rst_prolog>`_:
 # A string of reStructuredText that will be included at the beginning of every
 # source file that is read.
@@ -99,8 +107,48 @@ rst_prolog = (
 
 .. |blank| replace:: :blank:`x`
 """
+
+# For literate programming files, provide a convenient way to refer to a source file's name. See `runestone.lp.lp._docname_role`.
+""".. |docname| replace:: :docname:`name`
+"""
 )
 
+# Select whether to use server-side grading where possible. Server-side grading
+# requires **all** the following:
+#
+# - The use of Runestone services (``eBookConfig.useRunestoneServices === true``)
+# - Logging enabled (``eBookConfig.logLevel > 0``)
+#
+# The first two conditions cause the ``RunestoneBase.logBookEvent`` in ``runestonebase.js`` to post a student response to the server. The last conditions ensures that ``hsblog`` in ``ajax.py`` on the server will return a response containing grading information.
+runestone_server_side_grading = False
+
+# Extensions
+# ==========
+# CodeChat
+# --------
+# **CodeChat note:** A dict of {glob_, lexer_alias}, which uses lexer_alias
+# (e.g. a lexer's `short name <http://pygments.org/docs/lexers/>`_) to analyze
+# any file wihch matches the given `glob
+# <https://docs.python.org/2/library/glob.html>`_.
+CodeChat_lexer_for_glob = {
+    # Otherwise, Pygments picks the wrong lexer for CSS...
+    '*.css': 'CSS',
+    # ... and for JavaScript.
+    '*.js': 'JavaScript',
+}
+#
+# **CodeChat note::** This is a list of exclude_patterns_ which applies only to
+# source documents; exclude_patterns_ will exclude the given files from all of
+# Sphinx (for example, files here won't be included even if they're mentioned in
+# html_static_path_.
+CodeChat_excludes = []
+#
+# Inline syntax highlight
+# -----------------------
+# `inline_highlight_respect_highlight <https://sphinxcontrib-inlinesyntaxhighlight.readthedocs.io/en/latest/#confval-inline_highlight_respect_highlight>`_:
+# Use the language specified by the ``highlight`` directive to syntax highlight ``code`` role contents.
+inline_highlight_respect_highlight = True
+inline_highlight_literals = False
 
 # -- Options for HTML output ---------------------------------------------------
 
@@ -114,7 +162,7 @@ html_theme = 'sphinx_bootstrap'
 #html_theme_options = {'nosidebar': 'true'}
 html_theme_options = {
     # Navigation bar title. (Default: ``project`` value)
-    'navbar_title': "fitb_test",
+    'navbar_title': "Runestone Default",
 
     # Tab name for entire site. (Default: "Site")
     'navbar_site_name': "Chapters",
@@ -156,7 +204,8 @@ html_theme_options = {
 #html_style = "style.css"
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ["_templates/plugin_layouts"]
+html_theme_path = [pkg_resources.resource_filename('runestone', 'common/project_template/_templates/plugin_layouts')]
+
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -180,7 +229,7 @@ html_short_title ='Runestone Interactive Overview'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 
-html_static_path = ['_static']  + runestone_static_dirs()
+html_static_path = runestone_static_dirs()
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -226,3 +275,23 @@ html_show_sourcelink = False
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'PythonCoursewareProjectdoc'
 
+# 'accessibility_style' config value is defined in the 'accessibility' extension.
+# By this config value you can select what accessibility stylesheet
+# you want to add ('normal', 'light', 'darkest' or 'none')
+#accessibility_style = 'normal'
+
+# Config values for specific Runestone components
+#
+#activecode_div_class = 'runestone explainer ac_section alert alert-warning'
+#activecode_hide_load_history = False
+#mchoice_div_class = 'runestone alert alert-warning'
+#clickable_div_class = 'runestone alert alert-warning'
+#codelens_div_class = 'alert alert-warning cd_section'
+#dragndrop_div_class = 'runestone'
+#fitb_div_class = 'runestone'
+#parsons_div_class = 'runestone'
+#poll_div_class = 'alert alert-warning'
+#shortanswer_div_class = 'journal alert alert-warning'
+#shortanswer_optional_div_class = 'journal alert alert-success'
+#showeval_div_class = 'runestone explainer alert alert-warning'
+#tabbed_div_class = 'alert alert-warning'

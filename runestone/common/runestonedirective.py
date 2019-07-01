@@ -16,12 +16,21 @@
 __author__ = 'bmiller'
 
 
-import os
 from collections import defaultdict
+import binascii
+import os
+
 from docutils import nodes
 from docutils.parsers.rst import directives
 from docutils.parsers.rst import Directive
 from docutils.utils import get_source_line
+from docutils.statemachine import ViewList
+
+from sphinx import application
+from sphinx.errors import ExtensionError
+
+UNNUMBERED_DIRECTIVES = ['activecode', 'reveal', 'video', 'youtube', 'vimeo', 'codelens', 'showeval', 'poll', 'tabbed', 'tab', 'timed', 'disqus']
+
 
 # Provide a class which all Runestone nodes will inherit from.
 class RunestoneNode(nodes.Node):
@@ -36,6 +45,7 @@ class RunestoneNode(nodes.Node):
 #env.activecodecounter += 1
 # similar trick for assessments using getNumber()
 
+
 # Easily create and initialize an object with named methods from the object's constructor. Taken from http://stackoverflow.com/a/3652937. While a collections.namedtuple could probably be forced to do this, the following approach seems fairly straightforward.
 class Struct:
     def __init__(self, **kwargs):
@@ -44,6 +54,7 @@ class Struct:
     def __repr__(self):
         args = ['{}={}'.format(k, repr(v)) for (k,v) in vars(self).items()]
         return 'Struct({})'.format(', '.join(args))
+
 
 # Get a data structure which holds Runestone data from the environment. Create one if it doesn't exist.
 def _get_runestone_data(
@@ -84,6 +95,7 @@ def _get_runestone_data(
         )
     return env.runestone_data
 
+
 # When a source file is modified, clear all accumulated Runestone data from it.
 def _purge_runestone_data(app, env, docname):
     runestone_data = _get_runestone_data(env)
@@ -92,10 +104,74 @@ def _purge_runestone_data(app, env, docname):
         runestone_data.id_to_page.pop(id_)
     runestone_data.page_to_id.pop(docname)
 
+    # Reset the problem numbering for each page.
+    env.assesscounter = 0
+
+
+# Give the name of a file in the ``html_static_path``, append a version number after it based on its 32-bit CRC.
+def _add_autoversion(self,
+    # The file to find in the ``html_static_path``
+    filename):
+
+    # TODO: Cache the path and CRC to speed computing it.
+    #
+    # Search for this file by looking through all HTML static paths. The HTML builder hasn't been initilized, so the ``html_static_path`` doesn't show up yet as ``config.html_static_path``.
+    for path in self.config._raw_config['html_static_path']:
+        full_path = path
+        # Transform a relative path into an absolute path if necessary.
+        if not os.path.isabs(full_path):
+            full_path = os.path.join(self.confdir, full_path)
+        # Distinguish between files and directories.
+        if os.path.isdir(path):
+            # Append the path to a directory.
+            full_path = os.path.join(path, filename)
+        # If it's not a directory, assume it's a file. See if these match.
+        else:
+            if os.path.normpath(path).endswith(os.path.normpath(filename)):
+                full_path = path
+            else:
+                continue
+
+        # See if we can open it.
+        try:
+            f = open(os.path.join(path, filename), 'rb')
+        except IOError:
+            continue
+        else:
+            # Read the file and compute a CRC.
+            with f:
+                crc_str = '{:02X}'.format(binascii.crc32(f.read()))
+
+            # Append the CRC to the JavaScript reference.
+            return '{}?v={}'.format(filename, crc_str)
+
+    # No match was found.
+    raise ExtensionError('Unable to find {} in html_static_path.'.format(filename))
+
+
+# Convenience method to call ``add_javascript`` using ``add_autoversion``.
+def _add_autoversioned_javascript(self, filename):
+    return self.add_javascript(self.add_autoversion(filename))
+
+
+# Convenience method for calling ``add_stylesheet`` using ``add_autoversion``.
+def _add_autoversioned_stylesheet(self, filename, *args, **kwargs):
+    return self.add_stylesheet(self.add_autoversion(filename), *args, **kwargs)
+
+
+# Add these methods to the Sphinx application object.
+application.Sphinx.add_autoversion = _add_autoversion
+application.Sphinx.add_autoversioned_javascript = _add_autoversioned_javascript
+application.Sphinx.add_autoversioned_stylesheet = _add_autoversioned_stylesheet
+
+
 def setup(app):
     # See http://www.sphinx-doc.org/en/stable/extdev/appapi.html#event-env-purge-doc.
     app.connect('env-purge-doc', _purge_runestone_data)
     app.add_role('skipreading', SkipReading)
+    # See http://www.sphinx-doc.org/en/stable/extdev/appapi.html#sphinx.application.Sphinx.add_config_value.
+    app.add_config_value('runestone_server_side_grading', False, 'env')
+
 
 # A base class for all Runestone directives.
 class RunestoneDirective(Directive):
@@ -126,6 +202,38 @@ class RunestoneDirective(Directive):
 
 # This is a base class for all Runestone directives which require a divid as their first parameter.
 class RunestoneIdDirective(RunestoneDirective):
+    def getNumber(self):
+        if self.name in UNNUMBERED_DIRECTIVES:
+            return ""
+
+        env = self.state.document.settings.env
+        env.assesscounter += 1
+
+        res = "Q-%d"
+
+        if hasattr(env, 'assessprefix'):
+            res = env.assessprefix + "%d"
+
+        res = res % env.assesscounter
+
+        if hasattr(env, 'assesssuffix'):
+            res += env.assesssuffix
+
+        return res
+
+    def updateContent(self):
+        if self.content:
+            # If the first line is a directive, then put the numbering on a separate line.
+            if self.content[0][:2] == '..':
+                # Per the `docs <http://www.sphinx-doc.org/en/stable/extdev/markupapi.html#viewlists>`_, ``self.content`` is a ``ViewList``, so we can't just insert strings. Instead, create a viewlist the combine the two.
+                self.content = (
+                    # Use the source file from the existing ViewList when creating a new one.
+                    ViewList([self.options['qnumber'] + ':', ''], self.content.source(0)) +
+                    self.content
+                )
+            else:
+                self.content[0] = self.options['qnumber'] + ': ' + self.content[0]
+
     def run(self):
         # Make sure the runestone directive at least requires an ID.
         assert self.required_arguments >= 1
@@ -133,6 +241,8 @@ class RunestoneIdDirective(RunestoneDirective):
             id_ = self.options['divid'] = self.arguments[0]
         else:
             id_ = self.options['divid']
+
+        self.options['qnumber'] = self.getNumber()
 
         # Get references to `runestone data`_.
         env = self.state.document.settings.env
@@ -165,34 +275,38 @@ def first_time(app, *keys):
 # An internationalized component should call add_i18n_javascript() from its setup() function
 def add_i18n_js(app, supported_langs, *i18n_resources):
     if first_time(app, 'add_i18n_js'):
-        app.add_javascript('jquery_i18n/CLDRPluralRuleParser.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.messagestore.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.fallbacks.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.language.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.parser.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.emitter.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.emitter.bidi.js')
+        app.add_autoversioned_javascript('jquery_i18n/CLDRPluralRuleParser.js')
+        app.add_autoversioned_javascript('jquery_i18n/jquery.i18n.js')
+        app.add_autoversioned_javascript('jquery_i18n/jquery.i18n.messagestore.js')
+        app.add_autoversioned_javascript('jquery_i18n/jquery.i18n.fallbacks.js')
+        app.add_autoversioned_javascript('jquery_i18n/jquery.i18n.language.js')
+        app.add_autoversioned_javascript('jquery_i18n/jquery.i18n.parser.js')
+        app.add_autoversioned_javascript('jquery_i18n/jquery.i18n.emitter.js')
+        app.add_autoversioned_javascript('jquery_i18n/jquery.i18n.emitter.bidi.js')
     for res in i18n_resources:
         if(first_time(app,'add_i18n_js',res)):
-            app.add_javascript(res + ".en.js")
+            app.add_autoversioned_javascript(res + ".en.js")
             if app.config.language and app.config.language != "en" and app.config.language in supported_langs:
-                app.add_javascript(res + "." + app.config.language + ".js")
+                app.add_autoversioned_javascript(res + "." + app.config.language + ".js")
 
 # Adds CSS and JavaScript for the CodeMirror text editor
 def add_codemirror_css_and_js(app, *mods):
     if first_time(app, 'add_codemirror_css_and_js'):
-        app.add_stylesheet('codemirror.css')
-        app.add_javascript('codemirror.js')
+        app.add_autoversioned_stylesheet('codemirror.css')
+        app.add_autoversioned_javascript('codemirror.js')
     for mod in mods:
         if first_time(app, 'add_codemirror_css_and_js',mod):
-            app.add_javascript(mod + '.js')
+            app.add_autoversioned_javascript(mod + '.js')
 
 # Adds JavaScript for the Sculpt in-browser implementation of Python
 def add_skulpt_js(app):
     if first_time(app, 'add_skulpt_js'):
-        app.add_javascript('skulpt.min.js')
-        app.add_javascript('skulpt-stdlib.js')
+        app.add_autoversioned_javascript('skulpt.min.js')
+        app.add_autoversioned_javascript('skulpt-stdlib.js')
+        app.add_javascript("https://cdn.jsdelivr.net/npm/vega@4.0.0-rc.2/build/vega.js")
+        app.add_javascript("https://cdn.jsdelivr.net/npm/vega-lite@2.5.0/build/vega-lite.js")
+        app.add_javascript("https://cdn.jsdelivr.net/npm/vega-embed@3.14.0/build/vega-embed.js")
+
 
 # Some nodes have a line number of None. Look through their children to find the node's line number.
 def get_node_line(node):

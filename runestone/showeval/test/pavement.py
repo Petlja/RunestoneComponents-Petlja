@@ -31,8 +31,9 @@ options(
                        'course_url':master_url,
                        'use_services': 'false',
                        'python3': 'false',
-                       'dburl': '',
-                       'basecourse': 'showeval_test'
+                       'dburl': '', 'downloads_enabled': 'true', 'enable_chatcodes': 'false', 'allow_pairs': 'false',
+                       'basecourse': 'showeval_test',
+                       'dynamic_pages': False
                         }
     )
 )

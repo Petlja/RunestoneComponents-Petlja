@@ -32,7 +32,7 @@
 }
 
 div.ExecutionVisualizer #dataViz{
-  margin: 0;
+  margin: 0;  
 }
 
 div.ExecutionVisualizer div#stackHeader {
@@ -80,9 +80,11 @@ div.ExecutionVisualizer div#heap {
   margin: 0 auto;
 }
 
+/*  bnm -- comment this out for now as it breaks codelens indentation and arrows
 .visualizer tr{
   display: flex;
 }
+*/
 
 #vizLayoutTd{
   flex: 1;
@@ -164,7 +166,7 @@ div.ExecutionVisualizer table.visualizer {
   min-height: 60px;
 }
 
-.container .section > .runestone{
+.container .section > runestone:not(.ac_section){
   max-width:none;
   margin: 0;
 }
@@ -247,10 +249,31 @@ div.ExecutionVisualizer table.visualizer {
   background: grey;
 }
 
-.col-md-12 {
+body.present .ac_section>* {
+  max-width: none;
+}
+body.present iframe {
+  width: 100%;
+}
+
+body.present {
+  /* font-size: 2.0em; */
+}
+
+body.present #relations-prev, body.present #relations-next, body.present .navLinkBg {
+  display: none;
+}
+
+body.present .btn-presenter {
+  position: absolute;
+}
+body.present .btn-presenter.prev-exercise { left: 0px; }
+body.present .btn-presenter.next-exercise { right: 0px; }
+
+/* .col-md-12 {
   width: 58.333333333333336%;
 }
 
 .card-mode .col-md-7 {
   width: 50%;
-}
+} */

@@ -23,7 +23,8 @@ from runestone.common.runestonedirective import RunestoneIdDirective, RunestoneN
 def setup(app):
     app.add_directive('reveal', RevealDirective)
 
-    app.add_javascript('reveal.js')
+    app.add_autoversioned_javascript('reveal.js')
+    app.add_autoversioned_stylesheet('reveal.css')
 
     app.add_node(RevealNode, html=(visit_reveal_node, depart_reveal_node))
 
@@ -47,22 +48,35 @@ def visit_reveal_node(self, node):
     else:
         node.reveal_options['modaltitle'] = ''
 
-    res = TEMPLATE_START % node.reveal_options
+    if node.reveal_options['instructoronly'] and node.reveal_options['is_dynamic']:
+        res = DYNAMIC_PREFIX
+    else:
+        res = ""
+
+    res += TEMPLATE_START % node.reveal_options
     self.body.append(res)
 
 def depart_reveal_node(self,node):
 #Set options and format templates accordingly
     res = TEMPLATE_END % node.reveal_options
+    if node.reveal_options['instructoronly'] and node.reveal_options['is_dynamic']:
+        res += DYNAMIC_SUFFIX
 
     self.body.append(res)
 
 #Templates to be formatted by node options
+DYNAMIC_PREFIX = '''
+{{ if is_instructor: }}
+'''
 TEMPLATE_START = '''
-    <div data-component="reveal" id="%(divid)s" %(modal)s %(modaltitle)s %(showtitle)s %(hidetitle)s>
+    <div data-component="reveal" id="%(divid)s" %(modal)s %(modaltitle)s %(showtitle)s %(hidetitle)s %(instructoronly)s>
     '''
 TEMPLATE_END = '''
     </div>
     '''
+DYNAMIC_SUFFIX = '''
+{{ pass }}
+'''
 class RevealDirective(RunestoneIdDirective):
     """
 .. reveal:: identifier
@@ -70,6 +84,7 @@ class RevealDirective(RunestoneIdDirective):
    :hidetitle: Text on the 'hide' button--default is "Hide"
    :modal: Boolean--if included, revealed display will be a modal
    :modaltitle: Title of modal dialog window--default is "Message from the author"
+   :instructoronly: Only show button and contents to instructors
 
    Content  everything here will be hidden until revealed
    Content  It can be a lot...
@@ -82,7 +97,9 @@ class RevealDirective(RunestoneIdDirective):
     option_spec.update({"showtitle":directives.unchanged,
                    "hidetitle":directives.unchanged,
                    "modal":directives.flag,
-                   "modaltitle":directives.unchanged})
+                   "modaltitle":directives.unchanged,
+                   "instructoronly": directives.flag
+                   })
 
     def run(self):
         """
@@ -94,11 +111,13 @@ class RevealDirective(RunestoneIdDirective):
             :hidetitle: Text on the 'hide' button--default is "Hide"
             :modal: Boolean--if included, revealed display will be a modal
             :modaltitle: Title of modal dialog window--default is "Message from the author"
+            :instructoronly: only reveal content to instructors
 
             Content
             ...
             """
         super(RevealDirective, self).run()
+        env = self.state.document.settings.env
         self.assert_has_content() # make sure reveal has something in it
 
         if not 'showtitle' in self.options:
@@ -109,6 +128,14 @@ class RevealDirective(RunestoneIdDirective):
             self.options['hidetitle'] = 'data-hidetitle="Hide"'
         else:
             self.options['hidetitle'] = '''data-hidetitle=''' + '"' + self.options['hidetitle'] + '"'
+
+        if 'instructoronly' in self.options:
+            self.options['instructoronly'] = '''data-instructoronly style="display: none;"'''
+        else:
+            self.options['instructoronly'] = ""
+
+        is_dynamic = env.config.html_context.get('dynamic_pages', False)
+        self.options['is_dynamic'] = is_dynamic
 
         reveal_node = RevealNode(self.options, rawsource=self.block_text)
         reveal_node.source, reveal_node.line = self.state_machine.get_source_and_line(self.lineno)

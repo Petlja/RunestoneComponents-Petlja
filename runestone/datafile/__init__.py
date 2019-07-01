@@ -17,6 +17,7 @@ from __future__ import print_function
 
 __author__ = 'isaiahmayerchak'
 
+import os.path
 from docutils import nodes
 from docutils.parsers.rst import directives
 from sqlalchemy import Table
@@ -27,9 +28,9 @@ def setup(app):
     app.add_directive('datafile',DataFile)
     add_skulpt_js(app)
 
-    app.add_javascript('datafile.js')
+    app.add_autoversioned_javascript('datafile.js')
 
-    app.add_stylesheet('datafile.css')
+    app.add_autoversioned_stylesheet('datafile.css')
 
     app.add_node(DataFileNode, html=(visit_df_node, depart_df_node))
 
@@ -37,9 +38,11 @@ def setup(app):
     app.connect('env-purge-doc', purge_datafiles)
 
 
-TEMPLATE = """
+TEMPLATE = u"""
+<div class="runestone datafile">
+<div class="datafile_caption">Data file: <code>%(divid)s</code></div>
 <pre data-component="datafile" id=%(divid)s %(hidden)s data-edit="%(edit)s" data-rows="%(rows)s" data-cols="%(cols)s">
-%(filecontent)s</pre>
+%(filecontent)s</pre></div>
 """
 
 class DataFileNode(nodes.General, nodes.Element, RunestoneNode):
@@ -86,6 +89,7 @@ class DataFile(RunestoneIdDirective):
    :cols: If editable, number of columns--default is 20
    :rows: If editable, number of rows--default is 40
    :hide: Flag that sets a non-editable datafile to be hidden
+   :fromfile: path to file that contains the data
    """
     required_arguments = 1
     optional_arguments = 0
@@ -95,7 +99,8 @@ class DataFile(RunestoneIdDirective):
         'hide':directives.flag,
         'edit':directives.flag,
         'rows':directives.positive_int,
-        'cols':directives.positive_int
+        'cols':directives.positive_int,
+        'fromfile': directives.unchanged
     })
 
     def run(self):
@@ -108,6 +113,7 @@ class DataFile(RunestoneIdDirective):
                 :cols: If editable, number of columns--default is 20
                 :rows: If editable, number of rows--default is 40
                 :hide: Flag that sets a non-editable datafile to be hidden
+                :fromfile: path to file that contains the data
         """
         super(DataFile, self).run()
         env = self.state.document.settings.env
@@ -115,11 +121,13 @@ class DataFile(RunestoneIdDirective):
         if not hasattr(env,'datafilecounter'):
             env.datafilecounter = 0
         env.datafilecounter += 1
-
-        #if 'cols' not in self.options:
-        #    self.options['cols'] = min(65,max([len(x) for x in self.content]))
-        #if 'rows'not in self.options:
-        #    self.options['rows'] = 20
+        import os
+        if 'fromfile' in self.options:
+            ffpath = os.path.dirname(self.srcpath)
+            print(self.srcpath, os.getcwd())
+            filename = os.path.join(env.srcdir, ffpath, self.options['fromfile'])
+            with open(filename, 'rb') as f:
+                self.content = [x[:-1].decode('utf8') for x in f.readlines()]
 
         if 'cols' in self.options:
             self.options['cols'] = self.options['cols']

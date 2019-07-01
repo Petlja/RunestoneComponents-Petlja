@@ -7,7 +7,9 @@ __author__ = 'yasinovskyy'
 from runestone.unittest_base import module_fixture_maker, RunestoneTestCase
 
 setUpModule, tearDownModule = module_fixture_maker(__file__)
-ANSWERS = ["Red Orange Yellow", "Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"]
+# make two variations on Red Orang Yellow row for sphinx 1.x and 2.x
+ANSWERS = ["Red\nOrange\nYellow", "Red Orange Yellow", "Red", "Orange",
+    "Yellow", "Green", "Blue", "Indigo", "Violet"]
 
 class ClickableAreaQuestion_Tests(RunestoneTestCase):
     def test_ca1(self):
@@ -45,7 +47,7 @@ class ClickableAreaQuestion_Tests(RunestoneTestCase):
         fb = t1.find_element_by_class_name("alert")
         self.assertIsNotNone(fb)
         cnamestr = fb.get_attribute("class")
-        self.assertIn("alert-success", cnamestr)
+        self.assertIn("alert-info", cnamestr)
 
 
     def test_ca3(self):
@@ -149,7 +151,7 @@ class ClickableAreaQuestion_Tests(RunestoneTestCase):
         fb = t1.find_element_by_class_name("alert")
         self.assertIsNotNone(fb)
         cnamestr = fb.get_attribute("class")
-        self.assertIn("alert-success", cnamestr)
+        self.assertIn("alert-info", cnamestr)
 
 
     def test_ca8(self):

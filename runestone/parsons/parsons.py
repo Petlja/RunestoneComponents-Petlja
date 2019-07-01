@@ -24,12 +24,12 @@ from runestone.common.runestonedirective import RunestoneNode
 def setup(app):
     app.add_directive('parsonsprob', ParsonsProblem)
     app.add_node(ParsonsNode, html=(visit_parsons_node, depart_parsons_node))
-    app.add_stylesheet('parsons.css')
-    app.add_stylesheet('lib/prettify.css')
-    app.add_javascript('lib/prettify.js')
-    app.add_javascript('lib/hammer.min.js')
-    app.add_javascript('parsons.js')
-    app.add_javascript('timedparsons.js')
+    app.add_autoversioned_stylesheet('parsons.css')
+    app.add_autoversioned_stylesheet('js_lib/prettify.css')
+    app.add_autoversioned_javascript('js_lib/prettify.js')
+    app.add_autoversioned_javascript('js_lib/hammer.min.js')
+    app.add_autoversioned_javascript('parsons.js')
+    app.add_autoversioned_javascript('timedparsons.js')
     app.add_config_value('parsons_div_class', 'runestone', 'html')
 
 TEMPLATE = '''
@@ -87,7 +87,7 @@ class ParsonsProblem(Assessment):
       return curmax
 
 
-config values (conf.py): 
+config values (conf.py):
 
 - parsons_div_class - custom CSS class of the component's outermost div
     """
@@ -142,7 +142,6 @@ Example:
         addQuestionToDB(self)
 
         env = self.state.document.settings.env
-        self.options['qnumber'] = self.getNumber()
         self.options['instructions'] = ""
         self.options['code'] = self.content
         self.options['divclass'] = env.config.parsons_div_class

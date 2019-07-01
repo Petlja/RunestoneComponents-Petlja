@@ -1,7 +1,9 @@
-
-=====================
-This Is A New Project
-=====================
+qnum testing
+------------
+.. qnum::
+    :prefix: Before-
+    :suffix: -After
+    :start: 5
 
 Fill in the Blank
 -----------------
@@ -16,9 +18,11 @@ Fill in the Blank
     -   :away: Correct.
         :x: Incorrect. Try 'away'.
 
-Test 2.
+Test 2 - test a numeric range.
 
 .. fillintheblank:: fill_2pi
+
+    .. If this isn't treated as a comment, then it will cause a **syntax error, thus producing a test failure.
 
     What is the solution to the following:
 
@@ -68,7 +72,7 @@ Regex testing
 .. fillintheblank:: regexescapes1
    :casei:
 
-   Windows system files are stored in: |blank|. 
+   Windows system files are stored in: |blank|.
 
    -   :C\:\\Windows\\system: Correct.
        :program files: Third party applications are stored here, not system files.
@@ -77,8 +81,34 @@ Regex testing
 .. fillintheblank:: regexescapes2
    :casei:
 
-   Python lists are declared using: |blank|. 
+   Python lists are declared using: |blank|.
 
    -   :\[\]: Correct.
        :x: Try again.
 
+Timed exam testing
+------------------
+.. timed:: timed-exam-test
+
+    .. fillintheblank:: timed-fitb-1
+
+
+        Fill in the blanks to make the following sentence: "The red car drove away."
+
+        The |blank| car drove |blank|.
+
+        -   :red: Correct.
+            :x: Incorrect. Try 'red'.
+        -   :away: Correct.
+            :x: Incorrect. Try 'away'.
+
+    .. fillintheblank:: timed-fitb-2
+
+        What is the solution to the following:
+
+        :math:`2 * \pi =` |blank|.
+
+        - :6.28 0.005: Good job.
+          :3.27 3: Try higher.
+          :9.29 3: Try lower.
+          :.*: Incorrect. Try again.
