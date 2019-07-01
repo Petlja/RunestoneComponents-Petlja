@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from __future__ import print_function
-import os.path
 
 __author__ = 'bmiller'
 
@@ -23,7 +22,7 @@ from docutils.parsers.rst import directives
 from .textfield import *
 from sqlalchemy import Table
 from runestone.server.componentdb import addQuestionToDB, addHTMLToDB, engine, meta
-from runestone.common.runestonedirective import (RunestoneIdDirective, RunestoneNode, 
+from runestone.common.runestonedirective import (RunestoneIdDirective, RunestoneNode,
     add_i18n_js, add_codemirror_css_and_js, add_skulpt_js)
 
 try:
@@ -41,20 +40,21 @@ def setup(app):
     app.add_config_value('activecode_div_class', "runestone explainer ac_section alert alert-warning", 'html')
     app.add_config_value('activecode_hide_load_history', False, 'html')
 
-    app.add_stylesheet('activecode.css')
-    
-    app.add_javascript('jquery.highlight.js')
-    app.add_javascript('bookfuncs.js')
-    add_codemirror_css_and_js(app,'xml','css','python','htmlmixed','javascript')
+    app.add_autoversioned_stylesheet('activecode.css')
+
+    app.add_autoversioned_javascript('jquery.highlight.js')
+    app.add_autoversioned_javascript('bookfuncs.js')
+    add_codemirror_css_and_js(app,'xml','css','python','htmlmixed','javascript', 'sql')
     add_i18n_js(app, {"en","sr-Cyrl"},"activecode-i18n")
     add_skulpt_js(app)
-    app.add_javascript('activecode.js')
-    app.add_javascript('clike.js')
-    app.add_javascript('timed_activecode.js')
+    app.add_autoversioned_javascript('activecode.js')
+    app.add_autoversioned_javascript('clike.js')
+    app.add_autoversioned_javascript('timed_activecode.js')
+    app.add_autoversioned_javascript('sql-wasm.js') # todo: only load if we need it
 
 
 
-    
+
 
     app.add_node(ActivcodeNode, html=(visit_ac_node, depart_ac_node))
 
@@ -69,25 +69,12 @@ TEMPLATE_START = """
 TEMPLATE_END = """
 <textarea data-component="activecode" id=%(divid)s data-lang="%(language)s" %(autorun)s
     %(hidecode)s %(include)s %(timelimit)s %(coach)s %(codelens)s %(enabledownload)s %(chatcodes)s
-    data-audio='%(ctext)s' %(sourcefile)s %(datafile)s %(stdin)s
-    %(cargs)s %(largs)s %(rargs)s %(iargs)s %(gradebutton)s %(caption)s %(runortest)s %(playtask)s %(passivecode)s %(modaloutput)s %(hidehistory)s
-    %(includesrc)s %(includehsrc)s %(includexsrc)s %(enablecopy)s>
+    data-audio='%(ctext)s' %(sourcefile)s %(datafile)s %(stdin)s %(tie)s %(dburl)s %(nopair)s
+    %(cargs)s %(largs)s %(rargs)s %(iargs)s %(gradebutton)s %(caption)s %(hidehistory)s>
 %(initialcode)s
 </textarea>
 </div>
 """
-
-html_escape_table = {
-    "&": "&amp;",
-    '"': "&quot;",
-    "'": "&apos;",
-    ">": "&gt;",
-    "<": "&lt;",
-    }
-
-def html_escape(text):
-    """Produce entities within text."""
-    return "".join(html_escape_table.get(c,c) for c in text)
 
 class ActivcodeNode(nodes.General, nodes.Element, RunestoneNode):
     def __init__(self, content, **kwargs):
@@ -167,14 +154,8 @@ class ActiveCode(RunestoneIdDirective):
    :sourcefile: : source files (java, python2, python3)
    :available_files: : other additional files (java, python2, python3)
    :enabledownload: -- allow textfield contents to be downloaded as *.py file
-   :runortest:  -- run activecode or run unit tests within activecode
-   :playtask:  -- run hidden code
-   :passivecode: -- used for just showing incomplete pieces of code without interaction
-   :modaloutput: -- show output in modal window (used for drawing)
-   :includesrc: -- include source code from file
-   :includehsrc: -- include hidden source code from file 
-   :includexsrc: -- include source code from file with magic comments
-   :enablecopy: -- add copy to clipboard button 
+   :nopair: -- disable pair programming features
+   :dburl: url to load database for sql mode
 
     If this is a homework problem instead of an example in the text
     then the assignment text should go here.  The assignment text ends with
@@ -184,7 +165,7 @@ class ActiveCode(RunestoneIdDirective):
     ====
     print("Hidden code, such as unit tests come after the four = signs")
 
-config values (conf.py): 
+config values (conf.py):
 
 - activecode_div_class - custom CSS class of the component's outermost div
 - activecode_hide_load_history - if True, hide the load history button
@@ -221,14 +202,9 @@ config values (conf.py):
         'linkargs': directives.unchanged,
         'interpreterargs': directives.unchanged,
         'runargs': directives.unchanged,
-        'runortest': directives.unchanged,
-        'playtask': directives.flag,
-        'passivecode': directives.unchanged,
-        'modaloutput': directives.flag,
-        'includesrc': directives.unchanged,
-        'includehsrc': directives.unchanged,
-        'includexsrc': directives.unchanged,
-        'enablecopy': directives.flag
+        'tie': directives.unchanged,
+        'nopair': directives.flag,
+        'dburl': directives.unchanged
     })
 
 
@@ -316,6 +292,11 @@ config values (conf.py):
         else:
             self.options['codelens'] = 'data-codelens="true"'
 
+        if 'nopair' in self.options:
+            self.options['nopair'] = 'data-nopair="true"'
+        else:
+            self.options['nopair'] = ''
+
         if 'timelimit' not in self.options:
             self.options['timelimit'] = 'data-timelimit=25000'
         else:
@@ -325,35 +306,6 @@ config values (conf.py):
             self.options['autorun'] = ''
         else:
             self.options['autorun'] = 'data-autorun="true"'
-
-        if 'runortest' not in self.options:
-            self.options['runortest'] = ''
-        else:
-            lst = self.options['runortest'].split(',')
-            lst = [x.strip() for x in lst]
-            self.options['runortest'] = 'data-runortest="' + " ".join(lst) + '"'
-
-        if 'playtask' not in self.options:
-            self.options['playtask'] = ''
-        elif self.options['runortest']:
-            raise self.error('There must not be interference between runortest and playtask options')
-        else:
-            self.options['playtask'] = 'data-playtask="true"'
-
-        if 'passivecode' not in self.options:
-            self.options['passivecode'] = ''
-        else:
-            self.options['passivecode'] = 'data-passivecode="%s"' %self.options['passivecode']
-
-        if 'modaloutput' not in self.options:
-            self.options['modaloutput'] = ''
-        else:
-            self.options['modaloutput'] = 'data-modaloutput="true"'
-
-        if 'enablecopy' not in self.options:
-            self.options['enablecopy'] = ''
-        else:
-            self.options['enablecopy'] = 'data-enablecopy="true"'
 
         if 'coach' in self.options:
             self.options['coach'] = 'data-coach="true"'
@@ -376,6 +328,16 @@ config values (conf.py):
         else:
             self.options['sourcefile'] = "data-sourcefile='%s'" % self.options['sourcefile']
 
+        if 'tie' in self.options:
+            self.options['tie'] = "data-tie='{}'".format(self.options['tie'])
+        else:
+            self.options['tie'] = ""
+
+        if 'dburl' in self.options:
+            self.options['dburl'] = "data-dburl='{}'".format(self.options['dburl'])
+        else:
+            self.options['dburl'] = ""
+
         for opt,tp in [('compileargs','cargs'),('linkargs','largs'),('runargs','rargs'),('interpreterargs','iargs')]:
             if opt in self.options:
                 self.options[tp] = 'data-{}="{}"'.format(opt, escape(self.options[opt]))
@@ -392,33 +354,6 @@ config values (conf.py):
             self.options['hidehistory'] = 'data-hidehistory=true'
         else:
             self.options['hidehistory'] = ''
-
-        if 'includesrc' in self.options:
-            fname = self.options['includesrc']
-            cwd = os.path.abspath(os.getcwd())
-            path = os.path.join(cwd, fname)
-            with open(path, encoding='utf-8') as f:
-                self.options['includesrc'] = 'data-includesrc="%s"' % html_escape(f.read())        
-        else:
-            self.options['includesrc'] = ""
-
-        if 'includehsrc' in self.options:
-            fname = self.options['includehsrc']
-            cwd = os.path.abspath(os.getcwd())
-            path = os.path.join(cwd, fname)
-            with open(path, encoding='utf-8') as f:
-                self.options['includehsrc'] = 'data-includehsrc="%s"' % html_escape(f.read())
-        else:
-            self.options['includehsrc'] = ""
-
-        if 'includexsrc' in self.options:
-            fname = self.options['includexsrc']
-            cwd = os.path.abspath(os.getcwd())
-            path = os.path.join(cwd, fname)
-            with open(path, encoding='utf-8') as f:
-                self.options['includexsrc'] = 'data-includexsrc="%s"' % html_escape(f.read())
-        else:
-            self.options['includexsrc'] = ""
 
         if self.content:
             if '====' in self.content:

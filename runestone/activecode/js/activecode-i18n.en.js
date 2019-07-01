@@ -1,8 +1,5 @@
 $.i18n().load({
     "en": {
-        "msg_activecode_error_title": "Error",
-        "msg_activecode_description_title": "Description",
-        "msg_activecode_to_fix_title": "To Fix",
         "msg_activecode_load_history": "Load History",
         "msg_activecode_audio_tour": "Audio Tour",
         "msg_activecode_loaded_code": "Loaded your saved code.",
@@ -14,8 +11,6 @@ $.i18n().load({
         "msg_activecode_show_codelens": "Show CodeLens",
         "msg_activecode_show_in_codelens": "Show in CodeLens",
         "msg_activecode_hide_codelens": "Hide Codelens",
-        "msg_activecode_play_task": "Play task",
-        "msg_activecode_copy": "Copy",
 
         "msg_activecode_parse_error": "A parse error means that Python does not understand the syntax on the line the error message points out. Common examples are forgetting commas beteween arguments or forgetting a : on a for statement",
         "msg_activecode_parse_error_fix": "To fix a parse error you just need to look carefully at the line with the error and possibly the line before it.  Make sure it conforms to all of Python's rules.",
@@ -35,6 +30,8 @@ $.i18n().load({
         "msg_activecode_general_error_fix": "Add some print statements to figure out if your program is in an infinte loop.  If it is not you can increase the run time with sys.setExecutionLimit(msecs)",
         "msg_activecode_syntax_error": "This message indicates that Python can't figure out the syntax of a particular statement.  Some examples are assigning to a literal, or a function call",
         "msg_activecode_syntax_error_fix": "Check your assignment statments and make sure that the left hand side of the assignment is a variable, not a literal or a function.",
+        "msg_activecode_key_error": "This message indicates that you are trying to access an element of a dictionary, but the dictionary does not have that the key you are using.",
+        "msg_activecode_key_error_fix": "You may have a typo in the name of your key.  It is also good practice to check if the key exists using a statement like if key in mydict.  You can also use mydict.get(key,defaultvalue) so that if the key is not in the dictionary you get the default value instead of an error.",
         "msg_activecode_index_error": "This message means that you are trying to index past the end of a string or a list.  For example if your list has 3 things in it and you try to access the item at position 3 or more.",
         "msg_activecode_index_error_fix": "Remember that the first item in a list or string is at index position 0, quite often this message comes about because you are off by one.  Remember in a list of length 3 the last legal index is 2",
         "msg_activecode_uri_error": "",
@@ -69,9 +66,8 @@ $.i18n().load({
         "msg_activecode_server_err": "A server error occurred: $1 $2",
         "msg_activecode_compiling_running": "Compiling and Running your Code Now...",
         "msg_activecode_server_comm_err": "Error communicating with the server.",
-        "msg_activecode_save_run": "Save & Run"
-
-
+        "msg_activecode_save_run": "Save & Run",
+        "msg_activecode_render": "Save & Render"
 
     }
 });
