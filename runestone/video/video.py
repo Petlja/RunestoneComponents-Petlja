@@ -82,7 +82,6 @@ class Video(RunestoneIdDirective):
    :loop: loop the video
    :thumb: url to thumbnail image
    :preload: set the video to preload in the bg
-   :popup:
 
    url to video format 1
    url to video format 2
