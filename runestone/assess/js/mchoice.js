@@ -555,8 +555,7 @@ MultipleChoice.prototype.compareAnswers = function () {
 == Find the custom HTML tags and ==
 ==   execute our code on them    ==
 =================================*/
-//$(document).bind("runestone:login-complete", function () {
-$(document).ready(function() {
+$(document).bind("runestone:login-complete", function () {
     $("[data-component=multiplechoice]").each(function (index) {    // MC
         var opts = {"orig": this, 'useRunestoneServices':eBookConfig.useRunestoneServices};
         if ($(this).closest('[data-component=timedAssessment]').length == 0) { // If this element exists within a timed component, don't render it here
