@@ -428,9 +428,9 @@ MultipleChoice.prototype.renderMCMAFeedBack = function () {
         $(this.feedBackDiv).attr("class", "alert alert-info");
     } else {
         $(this.feedBackDiv).html("✖️ " + "You gave " + numGiven +
-        " " + answerStr + " and got " + numCorrect + " correct of " +
-        numNeeded + ' needed.<ol type="A">' + feedbackText + "</ul>");
-    $(this.feedBackDiv).attr("class", "alert alert-danger");
+            " " + answerStr + " and got " + numCorrect + " correct of " +
+            numNeeded + ' needed.<ol type="A">' + feedbackText + "</ul>");
+        $(this.feedBackDiv).attr("class", "alert alert-danger");
     }
 };
 
