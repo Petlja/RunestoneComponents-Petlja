@@ -82,7 +82,7 @@ FITB.prototype.renderFITBInput = function () {
 FITB.prototype.renderFITBButtons = function () {
     // "submit" button and "compare me" button
     this.submitButton = document.createElement("button");
-    this.submitButton.textContent = $.i18n("msg_fitb_check_me");
+    this.submitButton.textContent = "Check Me";
     $(this.submitButton).attr({
         "class": "btn btn-success",
         "name": "do answer",
@@ -249,8 +249,8 @@ FITB.prototype.evaluateAnswers = function () {
 
         // If this blank is empty, provide no feedback for it.
         if (given === "") {
-            this.isCorrectArray.push("");
-            this.displayFeed.push($.i18n("msg_no_answer"));
+            this.isCorrectArray.push(null);
+            this.displayFeed.push('No answer provided.');
         } else {
             // Look through all feedback for this blank. The last element in the array always matches.
             var fbl = this.feedbackArray[i];

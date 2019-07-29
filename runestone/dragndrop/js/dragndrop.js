@@ -358,7 +358,8 @@ DragNDrop.prototype.renderFeedback = function () {
     if (!this.feedBackDiv) {
         this.renderFeedbackDiv();
     }
-    this.feedBackDiv.style.display = "block";if (this.correct) {
+    this.feedBackDiv.style.display = "block";
+    if (this.correct) {
         $(this.feedBackDiv).html("You are correct!");
         $(this.feedBackDiv).attr("class", "alert alert-info draggable-feedback");
     } else {
