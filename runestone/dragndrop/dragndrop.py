@@ -172,4 +172,5 @@ config values (conf.py):
         dndNode.template_start = TEMPLATE_START
         dndNode.template_option = TEMPLATE_OPTION
         dndNode.template_end = TEMPLATE_END
+        
         return [dndNode]

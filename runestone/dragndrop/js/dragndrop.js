@@ -358,14 +358,11 @@ DragNDrop.prototype.renderFeedback = function () {
     if (!this.feedBackDiv) {
         this.renderFeedbackDiv();
     }
-    this.feedBackDiv.style.display = "block";
-    var msgCorrect = $.i18n("msg_dragndrop_correct_answer");
-    var msgIncorrect = $.i18n($.i18n("msg_dragndrop_incorrect_answer"), this.correctNum, this.incorrectNum, this.dragNum, this.unansweredNum);
-    if (this.correct) {
-        $(this.feedBackDiv).html(msgCorrect);
-        $(this.feedBackDiv).attr("class", "alert alert-success draggable-feedback");
+    this.feedBackDiv.style.display = "block";if (this.correct) {
+        $(this.feedBackDiv).html("You are correct!");
+        $(this.feedBackDiv).attr("class", "alert alert-info draggable-feedback");
     } else {
-        $(this.feedBackDiv).html(msgIncorrect + " " + this.feedback);
+        $(this.feedBackDiv).html("Incorrect. " + "You got " + this.correctNum + " correct and " + this.incorrectNum + " incorrect out of " + this.dragNum + ". You left " + this.unansweredNum + " blank. " + this.feedback);
         $(this.feedBackDiv).attr("class", "alert alert-danger draggable-feedback");
     }
 };
