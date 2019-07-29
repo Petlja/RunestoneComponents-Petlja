@@ -33,7 +33,7 @@ def setup(app):
     app.add_directive('timed', TimedDirective)
 
     app.add_config_value('mchoice_div_class', 'runestone alert alert-warning', 'html')
-
+    app.add_config_value('mchoice_compare_button_show', True, 'html');
     app.add_autoversioned_javascript('mchoice.js')
     app.add_autoversioned_javascript('timedmc.js')
     app.add_autoversioned_javascript('timed.js')
@@ -64,7 +64,6 @@ class AddButton(RunestoneIdDirective):
             ...
             """
         super(AddButton, self).run()
-
         TEMPLATE_START = '''
             <div id="%(divid)s" class="alert alert-warning">
             <form name="%(divid)s_form" method="get" action="" onsubmit="return false;">

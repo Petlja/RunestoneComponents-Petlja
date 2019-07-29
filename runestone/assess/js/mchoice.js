@@ -34,6 +34,7 @@ MultipleChoice.prototype.init = function (opts) {
     this.useRunestoneServices = opts.useRunestoneServices;
     this.multipleanswers = false;
     this.divid = orig.id;
+    this.showcomparebutton = $(orig).data('showcomparebutton');
 
     if ($(this.origElem).data("multipleanswers") === true) {
         this.multipleanswers = true;
@@ -230,7 +231,7 @@ MultipleChoice.prototype.renderMCFormButtons = function () {
     this.optsForm.appendChild(this.submitButton);
 
     // Create compare button
-    if (this.useRunestoneServices) {
+    if (this.useRunestoneServices && this.showcomparebutton) {
         this.compareButton = document.createElement("button");
         $(this.compareButton).attr({
             "class": "btn btn-default",
@@ -242,7 +243,7 @@ MultipleChoice.prototype.renderMCFormButtons = function () {
         this.compareButton.addEventListener("click", function () {
             this.compareAnswers(this.divid);
         }.bind(this), false);
-        // this.optsForm.appendChild(this.compareButton);
+        this.optsForm.appendChild(this.compareButton);
     }
 };
 
