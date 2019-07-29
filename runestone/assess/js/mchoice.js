@@ -242,7 +242,7 @@ MultipleChoice.prototype.renderMCFormButtons = function () {
         this.compareButton.addEventListener("click", function () {
             this.compareAnswers(this.divid);
         }.bind(this), false);
-        // this.optsForm.appendChild(this.compareButton);
+        this.optsForm.appendChild(this.compareButton);
     }
 };
 
