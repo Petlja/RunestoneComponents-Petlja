@@ -20,20 +20,19 @@
     margin-top: 15px
 }
 .drag-reset {
-    background-color: #474949;
     color: white;
 }
 .drag-reset:hover {
-    background-color: black;
-    color: white;
+    background-color: black !important;
+    color: white !important;
 }
 .drop-incorrect {
     border: 1px solid red !important;
     background-color: #f2dede !important;
 }
 .drag-reset:enabled {
-    background-color: #474949;
-    color: white;
+    background-color: RGB(221,221,221);
+    color: black;
 }
 .draggable-drag {
     -moz-border-radius:10px;
