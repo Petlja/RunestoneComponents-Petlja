@@ -120,11 +120,11 @@ LineBasedGrader.prototype.grade = function() {
 				feedbackArea.attr("class", "alert alert-success");
 				if (problem.checkCount > 1)
 				{
-				   feedbackArea.html("Perfect!  It took you " + problem.checkCount + " tries to solve this.  Click Reset to try to solve it in one attempt.");
+					feedbackArea.html($.i18n("msg_parson_correct"));
 			    }
 			    else
 			    {
-			       feedbackArea.html("Perfect!  It took you only one try to solve this.  Great job!");
+					feedbackArea.html($.i18n("msg_parson_correct"));
 			    }
 				correct = true;
 			} else {
@@ -180,7 +180,7 @@ LineBasedGrader.prototype.grade = function() {
 			for (i = 0; i < notInSolution.length; i++) {
 				$(notInSolution[i].view).addClass("incorrectPosition");
 			}
-			feedbackArea.html("Highlighted blocks in your program are wrong or are in the wrong order. This can be fixed by moving, removing, or replacing highlighted blocks.");
+			feedbackArea.html($.i18n("msg_wrong_order"));
 		}
 	}
 	return state;

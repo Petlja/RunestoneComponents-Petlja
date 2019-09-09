@@ -23,15 +23,15 @@
     background-color: #efefff;
     padding-bottom: 10px;
     padding-left: 0;
-    margin-left: 0;
+    margin-left: 10px;
     border: 1px solid #b8b8f2;
 }
 .parsons .source {
 	background-color: #efefff;
 }
 .parsons .answer {
-	background-color: #ffa;
-	border-color: #ee0;
+	background-color: #efefff;
+    border-color: #b8b8f2;
 }
 .parsons .answer.incorrect {
 	background-color: #f2dede;
@@ -149,6 +149,12 @@
     overflow: hidden;
     cursor: move;
 }
+.parsons-button {
+    margin-right: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
 .parsons .block.disabled {
 	opacity: 0.3;
 }
