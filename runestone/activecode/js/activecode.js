@@ -948,7 +948,7 @@ ActiveCode.prototype.setTimeLimit = function (timer) {
         this.code.indexOf('display.set_mode') > -1) {
         Sk.execLimit = null;
     } else {
-        if (timelimit === "off" || this.modaloutput == true) {
+        if (timelimit === "off" || this.modaloutput == true || this.autorun == true) {
             Sk.execLimit = null;
         } else if (timelimit) {
             Sk.execLimit = timelimit;
