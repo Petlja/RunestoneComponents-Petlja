@@ -21,6 +21,8 @@ from docutils.parsers.rst import directives
 from docutils.parsers.rst import Directive
 from runestone.server.componentdb import addQuestionToDB, addHTMLToDB
 from runestone.common.runestonedirective import RunestoneIdDirective, RunestoneNode, add_i18n_js
+from runestone.assess import Assessment
+
 
 def setup(app):
     app.add_directive('dragndrop',DragNDrop)
@@ -99,7 +101,7 @@ def depart_dnd_node(self,node):
     self.body.remove(node.delimiter)
 
 
-class DragNDrop(RunestoneIdDirective):
+class DragNDrop(Assessment):
     """
 .. dragndrop:: identifier
     :feedback: Feedback that is displayed if things are incorrectly matched--is optional
@@ -163,7 +165,6 @@ config values (conf.py):
             source = "\n".join(self.content)
         else:
             source = '\n'
-
         self.options['question'] = source
         env = self.state.document.settings.env
         self.options['divclass'] = env.config.dragndrop_div_class

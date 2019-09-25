@@ -36,7 +36,7 @@ def setup(app):
 TEMPLATE = '''
         <div class="%(divclass)s" style="max-width: none;">
         <pre data-component="parsons" id="%(divid)s" %(adaptive)s %(maxdist)s %(order)s %(noindent)s %(language)s %(numbered)s>
-        <span data-question>%(qnumber)s: %(instructions)s</span>%(code)s
+        <span data-question> %(instructions)s</span>%(code)s
         </pre>
         </div>
     '''
@@ -144,7 +144,6 @@ Example:
         addQuestionToDB(self)
 
         env = self.state.document.settings.env
-        self.options['qnumber'] = self.getNumber()
         self.options['instructions'] = ""
         self.options['code'] = self.content
         self.options['divclass'] = env.config.parsons_div_class
