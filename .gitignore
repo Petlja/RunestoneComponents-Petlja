@@ -48,5 +48,6 @@ runestone/*/test/build_info
 **/sphinx_settings.json
 
 # IDEs
+.vs/
 .vscode/
 **/sphinx-enki-info.txt
