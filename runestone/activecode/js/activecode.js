@@ -1049,7 +1049,13 @@ ActiveCode.prototype.buildProg = function (buildType = ActiveCode.prototype.BUIL
             parametersString += parameters[i] + "=None" + (i < parameters.length - 1 ? ',' : '');
             returnString += parameters[i] + "=" + parameters[i] + (i < parameters.length - 1 ? ',' : '');
         }
-        this.pretext = this.generalInitContent + "def acMainSection(" + parametersString + "):\n";
+        let functionA = "def acStdout():\n\tstdout=\"\"\n";
+        let mainCopy = main ;
+        let regex = /print\((.+?)\)/g;
+        mainCopy = mainCopy.replace(regex,"stdout = stdout + $1");
+        let returnString2 = "\treturn stdout\n";
+        mainCopy = functionA + mainCopy + returnString2 ;
+        this.pretext = this.generalInitContent+ mainCopy + "def acMainSection(" + parametersString + "):\n";
         returnString = "\treturn dict(" + returnString + ")\n";
         prog += this.pretext + main + returnString + this.suffix;
     } else if (buildType == this.BUILD_TYPE_PLAYTASK) {
