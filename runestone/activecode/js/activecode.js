@@ -1049,12 +1049,12 @@ ActiveCode.prototype.buildProg = function (buildType = ActiveCode.prototype.BUIL
             parametersString += parameters[i] + "=None" + (i < parameters.length - 1 ? ',' : '');
             returnString += parameters[i] + "=" + parameters[i] + (i < parameters.length - 1 ? ',' : '');
         }
-        let functionA = "def acStdout():\n\tstdout=\"\"\n";
-        let mainCopy = main ;
+
         let regex = /print\((.+?)\)/g;
+        let mainCopy ="def acStdout(" + parametersString + "):\n\tstdout=\"\"\n" + main; 
         mainCopy = mainCopy.replace(regex,"stdout = stdout + str($1)");
-        let returnString2 = "\treturn stdout\n";
-        mainCopy = functionA + mainCopy + returnString2 ;
+        mainCopy += "\treturn stdout\n";
+        
         this.pretext = this.generalInitContent+ mainCopy + "def acMainSection(" + parametersString + "):\n";
         returnString = "\treturn dict(" + returnString + ")\n";
         prog += this.pretext + main + returnString + this.suffix;
