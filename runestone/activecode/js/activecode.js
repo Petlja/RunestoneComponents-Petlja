@@ -1051,10 +1051,10 @@ ActiveCode.prototype.buildProg = function (buildType = ActiveCode.prototype.BUIL
         }
 
         let regex = /print\((.+?)\)/g;
-        let mainCopy ="def acStdout(" + parametersString + "):\n\tstdout=\"\"\n" + main; 
-        mainCopy = mainCopy.replace(regex,"stdout = stdout + str($1)");
+        let mainCopy ="def acStdout(" + parametersString + "):\n\tstdout=[]\n" + main; 
+        mainCopy = mainCopy.replace(regex,"stdout.append(str($1))");
         mainCopy += "\treturn stdout\n";
-        
+
         this.pretext = this.generalInitContent+ mainCopy + "def acMainSection(" + parametersString + "):\n";
         returnString = "\treturn dict(" + returnString + ")\n";
         prog += this.pretext + main + returnString + this.suffix;
