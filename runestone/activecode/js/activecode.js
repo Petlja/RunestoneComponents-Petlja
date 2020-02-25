@@ -1052,7 +1052,7 @@ ActiveCode.prototype.buildProg = function (buildType = ActiveCode.prototype.BUIL
         let functionA = "def acStdout():\n\tstdout=\"\"\n";
         let mainCopy = main ;
         let regex = /print\((.+?)\)/g;
-        mainCopy = mainCopy.replace(regex,"stdout = stdout + $1");
+        mainCopy = mainCopy.replace(regex,"stdout = stdout + str($1)");
         let returnString2 = "\treturn stdout\n";
         mainCopy = functionA + mainCopy + returnString2 ;
         this.pretext = this.generalInitContent+ mainCopy + "def acMainSection(" + parametersString + "):\n";
