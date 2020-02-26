@@ -589,7 +589,7 @@ ActiveCode.prototype.createOutput = function () {
     // canvas can be styled in CSS.  Which a the moment means just adding a border.
     $(this.graphics).on("DOMNodeInserted", 'canvas', (function (e) {
         $(this.graphics).addClass("visible-ac-canvas");
-        $(outDiv).css("height", "400px");
+        $(outDiv).css("height", "auto");
     }).bind(this));
 
     outDiv.appendChild(this.output);
@@ -1349,6 +1349,17 @@ def _call_event_handler(handle_event, event):
     }).bind(this),
         (function (err) {  // fail
             $(self.runButton).removeAttr('disabled');
+            switch (params[0]) {
+                case 0:
+                    $(this.runButton).removeAttr('disabled');
+                    break;
+                case 1:
+                    $(this.testButton).removeAttr('disabled');
+                    break;
+                case 2:
+                    $(this.playTaskButton).removeAttr('disabled');
+                    break;
+            }
             if (this.modaloutput) {
                 if (typeof PygameLib !== 'undefined')
                     PygameLib.running = false;
@@ -1512,7 +1523,7 @@ HTMLActiveCode.prototype.createOutput = function () {
     this.output = document.createElement('iframe');
     $(this.output).css("background-color", "white");
     $(this.output).css("position", "relative");
-    $(this.output).css("height", "400px");
+    $(this.output).css("height", "auto");
     $(this.output).css("width", "100%");
     outDiv.appendChild(this.output);
     this.outerDiv.appendChild(outDiv);
