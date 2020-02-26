@@ -589,7 +589,7 @@ ActiveCode.prototype.createOutput = function () {
     // canvas can be styled in CSS.  Which a the moment means just adding a border.
     $(this.graphics).on("DOMNodeInserted", 'canvas', (function (e) {
         $(this.graphics).addClass("visible-ac-canvas");
-        $(outDiv).css("height", "auto");
+        $(outDiv).css("height", "400px");
     }).bind(this));
 
     outDiv.appendChild(this.output);
@@ -1523,7 +1523,7 @@ HTMLActiveCode.prototype.createOutput = function () {
     this.output = document.createElement('iframe');
     $(this.output).css("background-color", "white");
     $(this.output).css("position", "relative");
-    $(this.output).css("height", "auto");
+    $(this.output).css("height", "400px");
     $(this.output).css("width", "100%");
     outDiv.appendChild(this.output);
     this.outerDiv.appendChild(outDiv);
