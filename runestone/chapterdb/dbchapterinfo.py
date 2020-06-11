@@ -145,6 +145,7 @@ def env_updated(app, env):
                 skips[(chap_id,subchap_id)] = True
 
             if chap_id in ignored_chapters or subchap_id == "index" :
+                chap_titles[chap_id] = title.astext()
                 continue
             if chap_id not in chap_titles:
                 if subchap_id == 'toctree':
