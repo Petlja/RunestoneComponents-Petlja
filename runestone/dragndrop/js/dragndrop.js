@@ -431,6 +431,16 @@ DragNDrop.prototype.setLocalStorage = function (data) {
     var storageObj = {"answer": this.pregnantIndexArray.join(";"), "minHeight": this.minheight, "timestamp": timeStamp, "correct": correct};
     localStorage.setItem(eBookConfig.email + ":" + this.divid + "-given", JSON.stringify(storageObj));
 };
+
+/**
+ * If we're using Runestone services but in practice mode, we will get no callback from the server
+ * and this method will be called instead. As a fix, let's finish setting up inside this method.
+ * @see RunestoneBase#loadData
+ */
+DragNDrop.prototype.loadData = function () {
+    this.finishSettingUp();
+};
+
 /*=================================
 == Find the custom HTML tags and ==
 ==   execute our code on them    ==
