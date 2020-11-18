@@ -1,5 +1,5 @@
 $.i18n().load({
-    "sr-Cyrl": {
+    "en": {
         "msg_parson_check_me": "Check",
         "msg_parson_reset": "Reset",
         "msg_parson_too_short" : "Your solution is too short. Add more blocks.",
