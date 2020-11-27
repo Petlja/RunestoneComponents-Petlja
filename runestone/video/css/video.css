@@ -27,3 +27,10 @@ body {
     counter-reset: activecode codelens;
 }
 
+
+
+.video-missing-error {
+    text-align: center;
+    color: red;
+    font-size: 16px;
+}
