@@ -1050,7 +1050,7 @@ ActiveCode.prototype.buildProg = function (buildType = ActiveCode.prototype.BUIL
             returnString += parameters[i] + "=" + parameters[i] + (i < parameters.length - 1 ? ',' : '');
         }
 
-        let regex = /print\((.+?)\)/g;
+        let regex = /print\s*\((.+?)\)/g;
         let mainCopy ="def acStdout(" + parametersString + "):\n\tstdout=[]\n" + main; 
         mainCopy = mainCopy.replace(regex,"stdout.append(str($1))");
         mainCopy += "\treturn stdout\n";
