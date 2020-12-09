@@ -1,5 +1,5 @@
 $.i18n().load({
-    "sr-Cyrl": {
+    "sr": {
         "msg_parson_check_me": "Провери",
         "msg_parson_reset": "Поништи",
         "msg_parson_too_short" :  "Искористи све блокове у решењу",
