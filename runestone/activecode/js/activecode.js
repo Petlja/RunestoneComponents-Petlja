@@ -1349,6 +1349,17 @@ def _call_event_handler(handle_event, event):
     }).bind(this),
         (function (err) {  // fail
             $(self.runButton).removeAttr('disabled');
+            switch (params[0]) {
+                case 0:
+                    $(this.runButton).removeAttr('disabled');
+                    break;
+                case 1:
+                    $(this.testButton).removeAttr('disabled');
+                    break;
+                case 2:
+                    $(this.playTaskButton).removeAttr('disabled');
+                    break;
+            }
             if (this.modaloutput) {
                 if (typeof PygameLib !== 'undefined')
                     PygameLib.running = false;

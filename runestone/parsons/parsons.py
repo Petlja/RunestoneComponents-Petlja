@@ -29,7 +29,7 @@ def setup(app):
     app.add_javascript('lib/prettify.js')
     app.add_javascript('lib/hammer.min.js')
     app.add_javascript('parsons.js')
-    add_i18n_js(app, {"en","sr-Cyrl"}, "parsons-i18n")
+    add_i18n_js(app, {"en","sr"}, "parsons-i18n")
     app.add_javascript('timedparsons.js')
     app.add_config_value('parsons_div_class', 'runestone', 'html')
 

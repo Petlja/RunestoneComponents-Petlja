@@ -1,5 +1,5 @@
 $.i18n().load({
-    "sr-Cyrl": {
+    "sr": {
         "msg_activecode_error_title": "Грешка",
         "msg_activecode_description_title": "Опис",
         "msg_activecode_to_fix_title": "Да исправите",
