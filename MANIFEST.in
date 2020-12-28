@@ -1,5 +1,6 @@
 graft runestone
 include requirements.txt
 include README.md
+include fork-description.rst
 prune runestone/*/test
 
