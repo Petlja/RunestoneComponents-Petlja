@@ -38,7 +38,7 @@ def setup(app):
     app.add_javascript('mchoice.js')
     app.add_javascript('timedmc.js')
     app.add_javascript('timed.js')
-    add_i18n_js(app, {"en","sr"}, "mchoice-i18n")
+    add_i18n_js(app, {"en","sr","sr-Latn","sr-Cyrl"}, "mchoice-i18n")
 
     app.add_node(TimedNode, html=(visit_timed_node, depart_timed_node))
     app.add_node(MChoiceNode, html=(visit_mc_node, depart_mc_node))
