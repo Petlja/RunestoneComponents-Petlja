@@ -2810,7 +2810,7 @@ function createArrows(div) {
     $(arrows[3]).on('mouseup', function () {
         returnIcon(3);
     });
-    $(document).keydown(function (e) {
+    $(document).unbind('keydown').bind('keydown', function (e) {
         switch (e.which) {
             case 37:
                 swapIcon(0);
@@ -2826,7 +2826,7 @@ function createArrows(div) {
                 break;
         }
     });
-    $(document).keyup(function (e) {
+    $(document).unbind('keyup').bind('keyup', function (e) {
         switch (e.which) {
             case 37:
                 returnIcon(0);

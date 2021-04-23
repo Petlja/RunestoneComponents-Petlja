@@ -18,7 +18,7 @@ function onPlayerStateChange(event) {
 	rb.logBookEvent(data);
 }
 
-window.onload = function () {
+window.addEventListener('load',function () {
 	var allVideos = document.getElementsByClassName('ytvideo');
 	var allVideosCloser = document.getElementsByClassName('ytvideoclose');
 
@@ -70,4 +70,4 @@ window.onload = function () {
 				toggleVideo(video.id.replace('modal-', ''));
 			});
 		});
-};
+});
