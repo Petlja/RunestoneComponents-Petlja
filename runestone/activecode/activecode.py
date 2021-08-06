@@ -24,7 +24,7 @@ from .textfield import *
 from sqlalchemy import Table
 from runestone.server.componentdb import addQuestionToDB, addHTMLToDB, engine, meta
 from runestone.common.runestonedirective import (RunestoneIdDirective, RunestoneNode, 
-    add_i18n_js, add_codemirror_css_and_js, add_skulpt_js)
+    add_i18n_js, add_codemirror_css_and_js)
 
 try:
     from html import escape  # py3
@@ -48,7 +48,7 @@ def setup(app):
     app.add_javascript('bookfuncs.js')
     add_codemirror_css_and_js(app,'xml','css','python','htmlmixed','javascript')
     add_i18n_js(app, {"en","sr","sr-Latn","sr-Cyrl"},"activecode-i18n")
-    add_skulpt_js(app)
+    #add_skulpt_js(app)
     app.add_javascript('activecode.js')
     app.add_javascript('clike.js')
     app.add_javascript('timed_activecode.js')
