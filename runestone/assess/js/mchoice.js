@@ -378,7 +378,7 @@ MultipleChoice.prototype.getSubmittedOpts = function () {
         if (buttonObjs[i].checked) {
             given = buttonObjs[i].value;
             this.givenArray.push(given);
-            this.feedbackString += '<li value="' + (i + 1) + '">' + this.feedbackList[i] + "</li>";
+            this.feedbackString += '<li value="' + (i + 1) + '">' + ( this.feedbackList[i] == "" ? (i in this.correctIndexList ? $.i18n("msg_mchoice_correct_answer") : $.i18n("msg_mchoice_incorrect_answer")) : this.feedbackList[i] ) + "</li>"
             this.givenlog += given + ",";
             this.singlefeedback = this.feedbackList[i];
         }
@@ -428,13 +428,14 @@ MultipleChoice.prototype.renderMCMAFeedBack = function () {
     var feedbackText = this.feedbackString;
 
     if (this.correct) {
-        $(this.feedBackDiv).html($.i18n("msg_mchoice_correct_answer"));
+        $(this.feedBackDiv).html(feedbackText);
         $(this.feedBackDiv).attr("class", "alert alert-success");
     } else {
-        $(this.feedBackDiv).html($.i18n("msg_mchoice_incorrect_answer"));
+        $(this.feedBackDiv).html(feedbackText);
         $(this.feedBackDiv).attr("class", "alert alert-danger");
     }
 };
+
 
 MultipleChoice.prototype.processMCMFSubmission = function (logFlag) {
     // Called when the submit button is clicked
