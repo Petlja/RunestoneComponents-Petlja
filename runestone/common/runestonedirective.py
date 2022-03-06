@@ -176,7 +176,7 @@ def add_i18n_js(app, supported_langs, *i18n_resources):
     for res in i18n_resources:
         if(first_time(app,'add_i18n_js',res)):
             app.add_javascript(res + ".en.js")
-            if app.config.language and app.config.language != "en" and app.config.language in supported_langs:
+            if app.config.language and app.config.language != "en":
                 app.add_javascript(res + "." + app.config.language + ".js")
 
 # Adds CSS and JavaScript for the CodeMirror text editor
