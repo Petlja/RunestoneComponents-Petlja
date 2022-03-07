@@ -176,6 +176,8 @@ def add_i18n_js(app, supported_langs, *i18n_resources):
     for res in i18n_resources:
         if(first_time(app,'add_i18n_js',res)):
             app.add_javascript(res + ".en.js")
+            if app.config.language in ['sr_RS','sr@latn']: 
+                app.config.language = {'sr_RS': 'sr-Cyrl', 'sr@latn': 'sr-Latn'}[app.config.language]
             if app.config.language and app.config.language != "en":
                 app.add_javascript(res + "." + app.config.language + ".js")
 
