@@ -34,6 +34,7 @@ def setup(app):
 
     app.add_config_value('mchoice_div_class', 'runestone alert alert-warning', 'html')
 
+    app.add_stylesheet('qchoice.css')
     #app.add_javascript('assess.js')
     app.add_javascript('mchoice.js')
     app.add_javascript('timedmc.js')
@@ -68,7 +69,7 @@ class AddButton(RunestoneIdDirective):
         super(AddButton, self).run()
 
         TEMPLATE_START = '''
-            <div id="%(divid)s" class="alert alert-warning">
+            <div id="%(divid)s" class="test-class alert alert-warning">
             <form name="%(divid)s_form" method="get" action="" onsubmit="return false;">
             '''
 

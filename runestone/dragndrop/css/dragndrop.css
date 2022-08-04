@@ -70,3 +70,62 @@
     border-color: #000000;
     background-color: #CCCCCC;
 }
+
+
+.dragndrop-question .image-background {
+	background-image: url('../_static/images/dragndrop-background.svg');
+
+}
+
+.dragndrop-question, .dragndrop-question .petlja-problem-box-icon-holder{
+    background-color: #BCAAA4 !important;
+}
+
+.dragndrop-question .drag-reset, .dragndrop-question .drag-reset:focus {
+    border-radius: 16px !important;
+    padding: 8px 16px !important;
+    color: #000 !important; 
+    background-color: #EFDCD5 !important;
+    border: none !important;
+}
+
+.dragndrop-question label > span {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.dragndrop-question .draggable {
+    background: transparent !important;
+    border: none !important;
+}
+
+.dragndrop-question .draggable-drag {
+    background-color: #6D4C41 !important;
+    padding: 8px 16px;
+    border: none;
+    color: #fff;
+}
+
+.dragndrop-question .draggable-drop  {
+    background-color: #8C7B75;
+    padding: 8px 16px;
+    border: none;
+    color: #fff;
+
+}
+
+.dragndrop-image {
+    left: calc(50% - 14px);
+    top: -26px;
+    width: 31px;
+}
+
+@media (max-width: 600px) {
+    .dragndrop-image {
+        left: calc(50% - 13px);
+        top: -32px;
+        width: 27px;
+        height: 45px;
+    }
+    
+}

@@ -37,7 +37,10 @@ def setup(app):
 
 
 TEMPLATE_START = """
-<div class="%(divclass)s">
+<div class="%(divclass)s dragndrop-question">
+    <div class="image-background"></div>
+    <div class="petlja-problem-box-icon-holder"> </div>
+    <img src="../_static/img/%(questionType)s-img.svg" class="petlja-problem-image  %(questionType)s-image" /> 
 <ul data-component="dragndrop" id="%(divid)s">
     <span data-component="question">%(question)s</span>
 	%(feedback)s
@@ -73,7 +76,8 @@ def visit_dnd_node(self,node):
         node.dnd_options["feedback"] = "<span data-component=feedback>" + node.dnd_options["feedback"] + "</span>"
     else:
         node.dnd_options["feedback"] = ""
-
+    
+    node.dnd_options['questionType'] = 'dragndrop'
     res = res % node.dnd_options
 
     self.body.append(res)
