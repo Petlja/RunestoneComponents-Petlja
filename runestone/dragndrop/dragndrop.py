@@ -41,6 +41,7 @@ TEMPLATE_START = """
     <div class="image-background"></div>
     <div class="petlja-problem-box-icon-holder"> </div>
     <img src="../_static/img/%(questionType)s-img.svg" class="petlja-problem-image  %(questionType)s-image" /> 
+    <img src="../_static/img/qchoice-img.svg" class="petlja-problem-image-quiz  qchoice-image" /> 
 <ul data-component="dragndrop" id="%(divid)s">
     <span data-component="question">%(question)s</span>
 	%(feedback)s

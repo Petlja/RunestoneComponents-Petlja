@@ -57,6 +57,8 @@ def visit_fitb_node(self,node):
 
     node.delimiter = "_start__{}_".format(node.fitb_options['divid'])
     self.body.append(node.delimiter)
+    
+    node.fitb_options['questionType'] = 'fitb'
 
     res = node.template_start % node.fitb_options
     self.body.append(res)
@@ -129,7 +131,11 @@ class FillInTheBlank(RunestoneIdDirective):
         super(FillInTheBlank, self).run()
 
         TEMPLATE_START = '''
-        <div class="%(divclass)s">
+        <div class="%(divclass)s fitb-question">
+        <div class="image-background"></div>
+        <div class="petlja-problem-box-icon-holder"> </div>
+        <img src="../_static/img/%(questionType)s-img.svg" class="petlja-problem-image  %(questionType)s-image" /> 
+        <img src="../_static/img/qchoice-img.svg" class="petlja-problem-image-quiz  qchoice-image" /> 
         
         <div data-component="fillintheblank" id="%(divid)s">
             '''

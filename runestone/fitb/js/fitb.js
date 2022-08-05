@@ -257,16 +257,20 @@ FITB.prototype.renderFITBFeedback = function () {
         $(this.feedBackDiv).attr("class", "alert alert-success");
         for (var j = 0; j < this.blankArray.length; j++) {
             $(this.blankArray[j]).removeClass("input-validation-error");
+            $(this.blankArray[j]).addClass("input-validation-correct");
         }
     } else {
+        
         if (this.displayFeed === null) {
             this.displayFeed = "";
         }
         for (var j = 0; j < this.blankArray.length; j++) {
             if (!this.isCorrectArray[j]) {
                 $(this.blankArray[j]).addClass("input-validation-error");
+                $(this.blankArray[j]).removeClass("input-validation-correct");
             } else {
                 $(this.blankArray[j]).removeClass("input-validation-error");
+                $(this.blankArray[j]).removeClass("input-validation-correct");
             }
         }
         $(this.feedBackDiv).attr("class", "alert alert-danger");

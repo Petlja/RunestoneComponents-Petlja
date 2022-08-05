@@ -64,6 +64,7 @@
 }
 .draggable-container {
     text-align:center;
+    overflow: hidden;
 }
 
 .possibleDrop {
@@ -99,6 +100,10 @@
     border: none !important;
 }
 
+.draggable.dragzone {
+    margin-right: 10px;
+}
+
 .dragndrop-question .draggable-drag {
     background-color: #6D4C41 !important;
     padding: 8px 16px;
@@ -114,10 +119,30 @@
 
 }
 
+
+.quiz-question .dragndrop-question .draggable-drag {
+    background-color: #16B89A !important;
+    padding: 8px 16px;
+    border: none;
+    color: #fff;
+}
+
+.quiz-question .dragndrop-question .draggable-drop  {
+    background-color: #00A886;
+    padding: 8px 16px;
+    border: none;
+    color: #fff;
+
+}
+
 .dragndrop-image {
     left: calc(50% - 14px);
     top: -26px;
     width: 31px;
+}
+
+.dragndrop-btns {
+    float: right;
 }
 
 @media (max-width: 600px) {

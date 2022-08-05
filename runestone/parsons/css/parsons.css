@@ -169,6 +169,7 @@
 }
 .parsons {
     display: block;
+	overflow: hidden;
 }
 .parsons .block {
 	clear: both;
@@ -251,8 +252,7 @@
 }
 .parsons .parsons-controls{
 	max-width: 500pt;
-	margin-left: auto;
-	margin-right: auto;
+	float: right;
 	text-align:center;
 }
 .parsons [role="tooltip"] {
@@ -300,4 +300,80 @@
     display: flex;
     align-items: stretch;
     align-content: stretch;
+}
+
+
+
+
+.parsons-question .image-background {
+	background-image: url('../_static/images/parsons-background.svg');
+
+}
+
+.parsons-question, .parsons-question .petlja-problem-box-icon-holder{
+    background-color: #E1BEE7 !important;
+}
+
+
+
+.parsons-question label > span {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.parsons-question .parsons {
+    background: transparent !important;
+    border: none !important;
+}
+
+
+
+
+.parsons-source div{
+	background-color: #7B1FA2 !important;
+	color: #fff !important;
+	font-size: 16px !important;
+	padding: 8px 16px !important;
+	margin-bottom: 0 !important;
+	line-height: 19px;
+}
+
+.quiz-question .parsons-source div{
+	background-color: #16B89A !important;
+}
+
+.parsons-source span {
+	color: #fff !important;
+}
+
+
+
+.parsons-controls .btn-reset {
+    border-radius: 16px !important;
+    padding: 8px 16px !important;
+    color: #AF8EB5 !important; 
+    background-color: #FFF1FF !important;
+    border: none !important;
+}
+
+.parsons-image {
+    left: calc(50% - 20px);
+    top: -26px;
+    width: 41px;
+}
+
+@media (max-width: 600px) {
+    .parsons-image {
+        left: calc(50% - 13px);
+        top: -32px;
+        width: 27px;
+        height: 45px;
+    }
+	.parsons-source {
+		width: 100% !important;
+	}
+	.parsons-option {
+		width: 100% !important;
+	}
+    
 }

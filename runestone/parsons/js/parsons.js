@@ -275,7 +275,7 @@ var ParsonsBlock = function(problem, lines) {
 	var view = document.createElement("div");
 	view.id = problem.counterId + "-block-" + problem.blockIndex;
 	problem.blockIndex += 1;
-	$(view).addClass("block");
+	$(view).addClass("block parsons-option");
 	var sharedIndent = lines[0].indent;
 	for (var i = 1; i < lines.length; i++) {
 		sharedIndent = Math.min(sharedIndent, lines[i].indent);
@@ -1221,7 +1221,7 @@ Parsons.prototype.initializeView = function () {
 
 	this.sourceArea = document.createElement("div");
 	this.sourceArea.id = this.counterId + "-source";
-	$(this.sourceArea).addClass("source");
+	$(this.sourceArea).addClass("source parsons-source");
 	$(this.sourceArea).attr("aria-describedby", this.counterId + "-sourceTip");
 	this.sourceRegionDiv.appendChild(this.sourceArea);
 
@@ -1256,7 +1256,7 @@ Parsons.prototype.initializeView = function () {
 		that.checkMe();
 	});
 	this.resetButton = document.createElement("button");
-	$(this.resetButton).attr("class", "btn btn-default");
+	$(this.resetButton).attr("class", "btn btn-reset");
 	this.resetButton.textContent =  $.i18n("msg_parson_reset");
 	this.resetButton.id = this.counterId + "-reset";
 	this.resetButton.type = "button";
@@ -1438,17 +1438,24 @@ Parsons.prototype.initializeAreas = function(sourceBlocks, answerBlocks, options
 	}
 	this.areaHeight = areaHeight;
 	$(this.sourceArea).css({
-		'width' : this.areaWidth + 2,
-		'height' : areaHeight
+		'width' : this.areaWidth + 14,
+		'height' : areaHeight,
+		'background-color': 'transparent',
+		'border': 'none',
+		'margin-top': '10px'
 	});
 	$(this.answerArea).css({
-		'width' : this.options.pixelsPerIndent * indent + this.areaWidth + 2,
-		'height' : areaHeight
+		'width' : this.options.pixelsPerIndent * indent + this.areaWidth + 14,
+		'height' : areaHeight,
+		'background-color': 'transparent',
+		'border': '1px dashed #838383',
+		'border-radius': '10px',
+		'margin-top': '10px'
 	});
 	if (indent > 0 && indent <= 4) {
-		$(this.answerArea).addClass("answer" + indent);
+		$(this.answerArea).addClass("answer" + indent + "  parsons-source");
 	} else {
-		$(this.answerArea).addClass("answer");
+		$(this.answerArea).addClass("answer  parsons-source");
 	}
 	
 	// Initialize paired distractor decoration
@@ -2494,7 +2501,7 @@ Parsons.prototype.removeIndentation = function() {
 	}
 	// Resize answer and source area
 	$(this.answerArea).removeClass("answer1 answer2 answer3 answer4");
-	$(this.answerArea).addClass("answer");
+	$(this.answerArea).addClass("answer  parsons-source");
 	this.indent = 0;
 	this.noindent = true;
 	$(this.sourceArea).animate({

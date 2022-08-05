@@ -34,7 +34,11 @@ def setup(app):
     app.add_config_value('parsons_div_class', 'runestone', 'html')
 
 TEMPLATE = '''
-        <div class="%(divclass)s" style="max-width: none;">
+        <div class="%(divclass)s parsons-question" style="max-width: none;">
+        <div class="image-background"></div>
+        <div class="petlja-problem-box-icon-holder"> </div>
+        <img src="../_static/img/%(questionType)s-img.svg" class="petlja-problem-image  %(questionType)s-image" /> 
+        <img src="../_static/img/qchoice-img.svg" class="petlja-problem-image-quiz quiz-image" /> 
         <pre data-component="parsons" id="%(divid)s" %(adaptive)s %(maxdist)s %(order)s %(noindent)s %(language)s %(numbered)s>
         <span data-question> %(instructions)s</span>%(code)s
         </pre>
@@ -49,6 +53,7 @@ class ParsonsNode(nodes.General, nodes.Element, RunestoneNode):
 
 def visit_parsons_node(self, node):
     div_id = node.parsonsnode_components['divid']
+    node.parsonsnode_components['questionType'] = 'parsons'
     components = dict(node.parsonsnode_components)
     components.update({'divid': div_id})
     res = TEMPLATE % components

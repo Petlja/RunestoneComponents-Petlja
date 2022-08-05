@@ -145,6 +145,7 @@ DragNDrop.prototype.addDragDivListeners = function () {
 
 DragNDrop.prototype.createButtons = function () {
     this.buttonDiv = document.createElement("div");
+    $(this.buttonDiv).addClass("dragndrop-btns");
     this.submitButton = document.createElement("button");    // Check me button
     this.submitButton.textContent = $.i18n("msg_dragndrop_check_me");
     $(this.submitButton).attr({
