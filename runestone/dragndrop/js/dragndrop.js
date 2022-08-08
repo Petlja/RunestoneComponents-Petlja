@@ -169,8 +169,8 @@ DragNDrop.prototype.createButtons = function () {
         this.resetDraggables();
     }.bind(this);
 
-    this.buttonDiv.appendChild(this.submitButton);
     this.buttonDiv.appendChild(this.resetButton);
+    this.buttonDiv.appendChild(this.submitButton);
     this.containerDiv.appendChild(this.buttonDiv);
 };
 
