@@ -356,6 +356,16 @@
     border: none !important;
 }
 
+
+.parsons-controls .btn-reset, .parsons-controls .btn-success {
+    float: right;
+}
+
+.parsons-controls .alert.alert-danger {
+    width: 100%;
+    float: right;
+}
+
 .parsons-image {
     left: calc(50% - 20px);
     top: -26px;
