@@ -5,6 +5,62 @@
 }
 
 input.input-validation-error {
-    border: 1px solid #e80c4d;
+    border: 1px solid #F63C51;
+    background-color: #FCCED9;
+    color: #F63C51;
 }
 
+input.input-validation-correct {
+    border: 1px solid #16B89A;
+    background-color: #A9E0D3;
+    color: #16B89A;
+}
+
+
+
+
+.fitb-question .image-background {
+	background-image: url('../_static/images/fitb-background.svg');
+
+}
+
+.fitb-question, .fitb-question .petlja-problem-box-icon-holder{
+    background-color: #D9F2ED !important;
+}
+
+
+
+.fitb-question label > span {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.fitb-question .fitb {
+    background: transparent !important;
+    border: none !important;
+}
+
+.fitb-question .alert-warning .alert-danger p{
+    color: #F63C51 !important;
+}
+.fitb-question .alert-warning .alert-success p{
+    color: #16B89A !important;
+}
+
+
+
+.fitb-image {
+    left: calc(50% - 14px);
+    top: -26px;
+    width: 31px;
+}
+
+@media (max-width: 600px) {
+    .fitb-image {
+        left: calc(50% - 13px);
+        top: -32px;
+        width: 27px;
+        height: 45px;
+    }
+    
+}

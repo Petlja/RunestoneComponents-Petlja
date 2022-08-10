@@ -602,7 +602,7 @@ ActiveCode.prototype.createOutput = function () {
 
 
     var lensDiv = document.createElement("div");
-    $(lensDiv).addClass("col-md-6");
+    $(lensDiv).addClass("col-md-12");
     $(lensDiv).css("display", "none");
     this.codelens = lensDiv;
     this.outerDiv.appendChild(lensDiv);

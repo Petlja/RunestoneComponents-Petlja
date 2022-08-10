@@ -48,6 +48,7 @@ def visit_mc_node(self,node):
         node.mc_options['multipleAnswers'] = 'true'
     else:
         node.mc_options['multipleAnswers'] = 'false'
+    node.mc_options['questionType'] = 'qchoice'
     res = node.template_start % node.mc_options
 
     self.body.append(res)
@@ -180,7 +181,11 @@ class MChoice(Assessment):
         super(MChoice, self).run()
 
         TEMPLATE_START = '''
-            <div class="%(divclass)s">
+            <div class="%(divclass)s choice-question">
+                <div class="image-background"></div>
+                <div class="petlja-problem-box-icon-holder"> </div>
+                <img src="../_static/img/%(questionType)s-img.svg" class="petlja-problem-image  %(questionType)s-image" />
+                <img src="../_static/img/qchoice-img.svg" class="petlja-problem-image-quiz  qchoice-image" /> 
             <ul data-component="multiplechoice" data-multipleanswers="%(multipleAnswers)s" %(random)s id="%(divid)s">
             '''
 
