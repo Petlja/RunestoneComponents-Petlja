@@ -41,9 +41,9 @@ def setup(app):
     app.add_directive('matrixeq', MatrixEq)
     app.add_role('inline_matrixeq', inline_matrixeq)
 
-    app.add_stylesheet('matrixeq.css')
+    app.add_css_file('matrixeq.css')
 
-    app.add_javascript('matrixeq.js')
+    app.add_js_file('matrixeq.js')
 
     app.add_node(MatrixEqNode, html=(visit_matrixeq_node, depart_matrixeq_node))
     app.add_node(InlineMatrixEqNode, html=(visit_inline_matrixeq_node, depart_inline_matrixeq_node))
