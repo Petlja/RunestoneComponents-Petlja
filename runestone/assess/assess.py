@@ -34,11 +34,11 @@ def setup(app):
 
     app.add_config_value('mchoice_div_class', 'runestone alert alert-warning', 'html')
 
-    app.add_stylesheet('qchoice.css')
-    #app.add_javascript('assess.js')
-    app.add_javascript('mchoice.js')
-    app.add_javascript('timedmc.js')
-    app.add_javascript('timed.js')
+    app.add_css_file('qchoice.css')
+    #app.add_js_file('assess.js')
+    app.add_js_file('mchoice.js')
+    app.add_js_file('timedmc.js')
+    app.add_js_file('timed.js')
     add_i18n_js(app, {"en","sr","sr-Latn","sr-Cyrl"}, "mchoice-i18n")
 
     app.add_node(TimedNode, html=(visit_timed_node, depart_timed_node))

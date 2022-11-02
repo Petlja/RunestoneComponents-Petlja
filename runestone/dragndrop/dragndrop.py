@@ -26,10 +26,10 @@ from runestone.assess import Assessment
 
 def setup(app):
     app.add_directive('dragndrop',DragNDrop)
-    app.add_javascript('dragndrop.js')
-    app.add_javascript('timeddnd.js')
+    app.add_js_file('dragndrop.js')
+    app.add_js_file('timeddnd.js')
     add_i18n_js(app, {"en","sr","sr-Latn","sr-Cyrl"}, "dragndrop-i18n")
-    app.add_stylesheet('dragndrop.css')
+    app.add_css_file('dragndrop.css')
 
     app.add_node(DragNDropNode, html=(visit_dnd_node, depart_dnd_node))
 

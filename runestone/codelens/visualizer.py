@@ -26,14 +26,14 @@ from runestone.common.runestonedirective import RunestoneIdDirective
 
 def setup(app):
     app.add_directive('codelens', Codelens)
-    app.add_stylesheet('pytutor.css')
-    app.add_stylesheet('modal-basic.css')
+    app.add_css_file('pytutor.css')
+    app.add_css_file('modal-basic.css')
 
-    app.add_javascript('d3.v2.min.js')
-    app.add_javascript('jquery.ba-bbq.min.js')
-    app.add_javascript('jquery.jsPlumb-1.3.10-all-min.js')
-    app.add_javascript('pytutor.js')
-    app.add_javascript('codelens.js')
+    app.add_js_file('d3.v2.min.js')
+    app.add_js_file('jquery.ba-bbq.min.js')
+    app.add_js_file('jquery.jsPlumb-1.3.10-all-min.js')
+    app.add_js_file('pytutor.js')
+    app.add_js_file('codelens.js')
 
     app.add_config_value('codelens_div_class', "alert alert-warning cd_section", 'html')
 

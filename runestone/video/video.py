@@ -26,9 +26,9 @@ def setup(app):
     app.add_directive('youtube', Youtube)
     app.add_directive('ytpopup', YtPopUp)
     app.add_directive('vimeo', Vimeo)
-    app.add_stylesheet('https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css')
-    app.add_stylesheet('video.css')
-    app.add_javascript('runestonevideo.js')
+    app.add_css_file('https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css')
+    app.add_css_file('video.css')
+    app.add_js_file('runestonevideo.js')
 
 CODE = """\
 <div id="%(divid)s" class="video_popup runestone" >

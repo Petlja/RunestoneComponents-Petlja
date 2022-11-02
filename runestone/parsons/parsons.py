@@ -24,13 +24,13 @@ from runestone.common.runestonedirective import RunestoneNode , add_i18n_js
 def setup(app):
     app.add_directive('parsonsprob', ParsonsProblem)
     app.add_node(ParsonsNode, html=(visit_parsons_node, depart_parsons_node))
-    app.add_stylesheet('parsons.css')
-    app.add_stylesheet('lib/prettify.css')
-    app.add_javascript('lib/prettify.js')
-    app.add_javascript('lib/hammer.min.js')
-    app.add_javascript('parsons.js')
+    app.add_css_file('parsons.css')
+    app.add_css_file('lib/prettify.css')
+    app.add_js_file('lib/prettify.js')
+    app.add_js_file('lib/hammer.min.js')
+    app.add_js_file('parsons.js')
     add_i18n_js(app, {"en","sr","sr-Latn","sr-Cyrl"}, "parsons-i18n")
-    app.add_javascript('timedparsons.js')
+    app.add_js_file('timedparsons.js')
     app.add_config_value('parsons_div_class', 'runestone', 'html')
 
 TEMPLATE = '''

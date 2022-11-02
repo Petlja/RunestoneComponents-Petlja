@@ -160,6 +160,8 @@ FITB.prototype.checkLocalStorage = function () {
 };
 
 FITB.prototype.setLocalStorage = function (data) {
+    if (!this.isLocalStorageAvailable())
+        return
     // logs answer to local storage
     this.given_arr = [];
     for (var i = 0; i < this.blankArray.length; i++)

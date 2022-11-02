@@ -165,36 +165,36 @@ def first_time(app, *keys):
 # An internationalized component should call add_i18n_javascript() from its setup() function
 def add_i18n_js(app, supported_langs, *i18n_resources):
     if first_time(app, 'add_i18n_js'):
-        app.add_javascript('jquery_i18n/CLDRPluralRuleParser.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.messagestore.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.fallbacks.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.language.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.parser.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.emitter.js')
-        app.add_javascript('jquery_i18n/jquery.i18n.emitter.bidi.js')
+        app.add_js_file('jquery_i18n/CLDRPluralRuleParser.js')
+        app.add_js_file('jquery_i18n/jquery.i18n.js')
+        app.add_js_file('jquery_i18n/jquery.i18n.messagestore.js')
+        app.add_js_file('jquery_i18n/jquery.i18n.fallbacks.js')
+        app.add_js_file('jquery_i18n/jquery.i18n.language.js')
+        app.add_js_file('jquery_i18n/jquery.i18n.parser.js')
+        app.add_js_file('jquery_i18n/jquery.i18n.emitter.js')
+        app.add_js_file('jquery_i18n/jquery.i18n.emitter.bidi.js')
     for res in i18n_resources:
         if(first_time(app,'add_i18n_js',res)):
-            app.add_javascript(res + ".en.js")
+            app.add_js_file(res + ".en.js")
             if app.config.language in ['sr_RS','sr@latn']: 
                 app.config.language = {'sr_RS': 'sr-Cyrl', 'sr@latn': 'sr-Latn'}[app.config.language]
             if app.config.language and app.config.language != "en":
-                app.add_javascript(res + "." + app.config.language + ".js")
+                app.add_js_file(res + "." + app.config.language + ".js")
 
 # Adds CSS and JavaScript for the CodeMirror text editor
 def add_codemirror_css_and_js(app, *mods):
     if first_time(app, 'add_codemirror_css_and_js'):
-        app.add_stylesheet('codemirror.css')
-        app.add_javascript('codemirror.js')
+        app.add_css_file('codemirror.css')
+        app.add_js_file('codemirror.js')
     for mod in mods:
         if first_time(app, 'add_codemirror_css_and_js',mod):
-            app.add_javascript(mod + '.js')
+            app.add_js_file(mod + '.js')
 
 # Adds JavaScript for the Sculpt in-browser implementation of Python
 def add_skulpt_js(app):
     if first_time(app, 'add_skulpt_js'):
-        app.add_javascript('skulpt.min.js')
-        app.add_javascript('skulpt-stdlib.js')
+        app.add_js_file('skulpt.min.js')
+        app.add_js_file('skulpt-stdlib.js')
 
 # Some nodes have a line number of None. Look through their children to find the node's line number.
 def get_node_line(node):

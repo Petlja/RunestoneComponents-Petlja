@@ -14,7 +14,7 @@
 var mcList = {};    // Multiple Choice dictionary
 
 // MC constructor
-function MultipleChoice (opts) {
+function MultipleChoice(opts) {
     if (opts) {
         this.init(opts);
     }
@@ -97,7 +97,7 @@ MultipleChoice.prototype.findAnswers = function () {
             is_correct = true;
         }
         var answer_text = $(ChildAnswerList[j]).html();
-        var answer_object = {id: answer_id, correct: is_correct, content: answer_text};
+        var answer_object = { id: answer_id, correct: is_correct, content: answer_text };
         this.answerList.push(answer_object);
     }
 };
@@ -343,8 +343,10 @@ MultipleChoice.prototype.checkLocalStorage = function () {
 };
 
 MultipleChoice.prototype.setLocalStorage = function (data) {
+    if (!this.isLocalStorageAvailable())
+        return
     var timeStamp = new Date();
-    var storageObj = {"answer": data.answer, "timestamp": timeStamp, "correct": data.correct};
+    var storageObj = { "answer": data.answer, "timestamp": timeStamp, "correct": data.correct };
     localStorage.setItem(eBookConfig.email + ":" + this.divid + "-given", JSON.stringify(storageObj));
 };
 
@@ -356,10 +358,11 @@ MultipleChoice.prototype.processMCMASubmission = function (logFlag) {
     // Called when the submit button is clicked
     this.getSubmittedOpts();   // make sure this.givenArray is populated
     this.scoreMCMASubmission();
-    this.setLocalStorage({"correct": (this.correct ? "T" : "F"), "answer": this.givenArray.join(",")});
+    if (this.isLocalStorageAvailable())
+        this.setLocalStorage({ "correct": (this.correct ? "T" : "F"), "answer": this.givenArray.join(",") });
     if (logFlag) {
         var answer = this.givenArray.join(",");
-        this.logMCMAsubmission({"answer": answer, "correct": this.correct});
+        this.logMCMAsubmission({ "answer": answer, "correct": this.correct });
     }
     this.renderMCMAFeedBack();
     if (this.useRunestoneServices) {
@@ -383,23 +386,23 @@ MultipleChoice.prototype.getSubmittedOpts = function () {
     }
     this.givenArray.sort();
     this.scoreMCMASubmission()
-    if (this.feedbackList.every(feedback => feedback == "") && this.correct){
+    if (this.feedbackList.every(feedback => feedback == "") && this.correct) {
         this.feedbackString += '<li value="1">' + $.i18n("msg_mchoice_correct_answer") + "</li>"
     }
-        if (this.feedbackList.every(feedback => feedback == "") && !this.correct){
+    if (this.feedbackList.every(feedback => feedback == "") && !this.correct) {
         this.feedbackString += '<li value="1">' + $.i18n("msg_mchoice_incorrect_answer") + "</li>"
     }
     for (var i = 0; i < buttonObjs.length; i++) {
         if (buttonObjs[i].checked) {
-            if(this.feedbackList[i] !== "" && ((!this.correctIndexList.includes(i) && !this.correct) || (this.correctIndexList.includes(i) && this.correct)))
+            if (this.feedbackList[i] !== "" && ((!this.correctIndexList.includes(i) && !this.correct) || (this.correctIndexList.includes(i) && this.correct)))
                 this.feedbackString += '<li value="' + (i + 1) + '">' + this.feedbackList[i] + "</li>"
             this.singlefeedback = this.feedbackList[i];
         }
     }
     if (this.feedbackString == "")
-        this.feedbackString = this.correct ?  $.i18n("msg_mchoice_correct_answer") : $.i18n("msg_mchoice_incorrect_answer");
+        this.feedbackString = this.correct ? $.i18n("msg_mchoice_correct_answer") : $.i18n("msg_mchoice_incorrect_answer");
     if (this.singlefeedback == "")
-        this.singlefeedback = this.correct ?  $.i18n("msg_mchoice_correct_answer") : $.i18n("msg_mchoice_incorrect_answer");
+        this.singlefeedback = this.correct ? $.i18n("msg_mchoice_correct_answer") : $.i18n("msg_mchoice_incorrect_answer");
 }
 
 MultipleChoice.prototype.scoreMCMASubmission = function () {
@@ -429,7 +432,7 @@ MultipleChoice.prototype.logMCMAsubmission = function (data) {
     var answer = data.answer;
     var correct = data.correct;
     var logAnswer = "answer:" + answer + ":" + (correct == "T" ? "correct" : "no");
-    this.logBookEvent({"event": "mChoice", "act": logAnswer, "answer":answer, "correct": correct, "div_id": this.divid});
+    this.logBookEvent({ "event": "mChoice", "act": logAnswer, "answer": answer, "correct": correct, "div_id": this.divid });
 };
 
 
@@ -457,7 +460,7 @@ MultipleChoice.prototype.processMCMFSubmission = function (logFlag) {
     // Called when the submit button is clicked
     this.getSubmittedOpts();   // make sure this.givenArray is populated
     this.scoreMCMFSubmission();
-    this.setLocalStorage({"correct": (this.correct ? "T" : "F"), "answer": this.givenArray.join(",")});
+    this.setLocalStorage({ "correct": (this.correct ? "T" : "F"), "answer": this.givenArray.join(",") });
     if (logFlag) {
         this.logMCMFsubmission();
     }
@@ -481,7 +484,7 @@ MultipleChoice.prototype.logMCMFsubmission = function () {
     var answer = this.givenArray[0];
     var correct = (this.givenArray[0] == this.correctIndexList[0] ? "T" : "F");
     var logAnswer = "answer:" + answer + ":" + (correct == "T" ? "correct" : "no");  // backward compatible
-    this.logBookEvent({"event": "mChoice", "act": logAnswer, "answer": answer, "correct": correct, "div_id": this.divid});
+    this.logBookEvent({ "event": "mChoice", "act": logAnswer, "answer": answer, "correct": correct, "div_id": this.divid });
 };
 
 MultipleChoice.prototype.renderMCMFFeedback = function (correct, feedbackText) {
@@ -577,9 +580,9 @@ MultipleChoice.prototype.compareAnswers = function () {
 ==   execute our code on them    ==
 =================================*/
 //$(document).bind("runestone:login-complete", function () {
-$(document).ready(function() {
+$(document).ready(function () {
     $("[data-component=multiplechoice]").each(function (index) {    // MC
-        var opts = {"orig": this, 'useRunestoneServices':eBookConfig.useRunestoneServices};
+        var opts = { "orig": this, 'useRunestoneServices': eBookConfig.useRunestoneServices };
         if ($(this).closest('[data-component=timedAssessment]').length == 0) { // If this element exists within a timed component, don't render it here
             mcList[this.id] = new MultipleChoice(opts);
         }
@@ -589,4 +592,4 @@ $(document).ready(function() {
 if (typeof component_factory === 'undefined') {
     component_factory = {}
 }
-component_factory['multiplechoice'] = function(opts) { return new MultipleChoice(opts)}
+component_factory['multiplechoice'] = function (opts) { return new MultipleChoice(opts) }

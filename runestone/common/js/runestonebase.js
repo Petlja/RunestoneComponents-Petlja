@@ -15,11 +15,11 @@
   *
  **/
 
-function RunestoneBase () {   // Basic parent stuff
+function RunestoneBase() {   // Basic parent stuff
 
 }
 
-RunestoneBase.prototype.init = function(opts) {
+RunestoneBase.prototype.init = function (opts) {
 
     this.sid = opts.sid;
     this.graderactive = opts.graderactive;
@@ -40,14 +40,16 @@ RunestoneBase.prototype.logBookEvent = function (eventInfo) {
 
 RunestoneBase.prototype.logRunEvent = function (eventInfo) {
     eventInfo.course = eBookConfig.course;
-    if ( this.forceSave || (! 'to_save' in eventInfo) ) {
+    if (this.forceSave || (! 'to_save' in eventInfo)) {
         eventInfo.save_code = "True"
     }
     if (eBookConfig.useRunestoneServices && eBookConfig.logLevel > 0) {
         jQuery.post(eBookConfig.ajaxURL + 'runlog', eventInfo) // Log the run event
-            .done((function() {this.forceSave = false; }).bind(this))
-            .fail((function() {alert("WARNING:  Your code was not saved!  Please Try again.");
-                this.forceSave = true; }).bind(this))
+            .done((function () { this.forceSave = false; }).bind(this))
+            .fail((function () {
+                alert("WARNING:  Your code was not saved!  Please Try again.");
+                this.forceSave = true;
+            }).bind(this))
     }
     console.log("running " + JSON.stringify(eventInfo));
 };
@@ -64,18 +66,23 @@ RunestoneBase.prototype.checkServer = function (eventInfo) {
         if (this.sid) {
             data.sid = this.sid
         }
-        if (!eBookConfig.practice_mode){
-            jQuery.getJSON(eBookConfig.ajaxURL + "getAssessResults", data, this.repopulateFromStorage.bind(this)).error(this.checkLocalStorage.bind(this));
+        if (!eBookConfig.practice_mode) {
+            jQuery.getJSON(eBookConfig.ajaxURL + "getAssessResults", data, this.repopulateFromStorage.bind(this))
+                .error(() => {
+                    if (this.isLocalStorageAvailable())
+                        this.checkLocalStorage.bind(this);
+                });
         }
-        else{
+        else {
             this.loadData({});
         }
     } else {
-        this.checkLocalStorage();   // just go right to local storage
+        if (this.isLocalStorageAvailable())
+            this.checkLocalStorage();   // just go right to local storage
     }
 };
 
-RunestoneBase.prototype.loadData = function (data){
+RunestoneBase.prototype.loadData = function (data) {
     // for most classes, loadData doesn't do anything. But for Parsons, and perhaps others in the future,
     // initialization can happen even when there's no history to be loaded
     return null;
@@ -85,9 +92,11 @@ RunestoneBase.prototype.repopulateFromStorage = function (data, status, whatever
     // decide whether to use the server's answer (if there is one) or to load from storage
     if (data !== null && this.shouldUseServer(data)) {
         this.restoreAnswers(data);
-        this.setLocalStorage(data);
+        if (this.isLocalStorageAvailable())
+            this.setLocalStorage(data);
     } else {
-        this.checkLocalStorage();
+        if (this.isLocalStorageAvailable())
+            this.checkLocalStorage();
     }
 };
 
@@ -103,7 +112,7 @@ RunestoneBase.prototype.shouldUseServer = function (data) {
     let storedData;
     try {
         storedData = JSON.parse(ex);
-    } catch (err){
+    } catch (err) {
         // error while parsing; likely due to bad value stored in storage
         console.log(err.message);
         localStorage.removeItem(eBookConfig.email + ":" + this.divid + "-given");
@@ -118,3 +127,14 @@ RunestoneBase.prototype.shouldUseServer = function (data) {
     return serverDate >= storageDate;
 
 };
+
+RunestoneBase.prototype.isLocalStorageAvailable = function () {
+    var test = 'test';
+    try {
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}

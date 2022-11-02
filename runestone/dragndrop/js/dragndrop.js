@@ -12,7 +12,7 @@
 var ddList = {};    // Dictionary that contains all instances of dragndrop objects
 
 
-function DragNDrop (opts) {
+function DragNDrop(opts) {
     if (opts) {
         this.init(opts);
     }
@@ -51,7 +51,7 @@ DragNDrop.prototype.populate = function () {
             var replaceSpan = document.createElement("span");
             replaceSpan.innerHTML = tmp.innerHTML;
             replaceSpan.id = this.divid + tmp.id;
-            $(replaceSpan).attr("draggable","true");
+            $(replaceSpan).attr("draggable", "true");
             $(replaceSpan).addClass("draggable-drag");
 
             var otherReplaceSpan = document.createElement("span");
@@ -135,7 +135,7 @@ DragNDrop.prototype.addDragDivListeners = function () {
         }
     }.bind(this));
 
-    this.draggableDiv.addEventListener("dragleave", function(e) {
+    this.draggableDiv.addEventListener("dragleave", function (e) {
         if (!$(this.draggableDiv).hasClass("possibleDrop")) {
             return;
         }
@@ -219,7 +219,7 @@ DragNDrop.prototype.setEventListeners = function (dgSpan, dpSpan) {
         if ($(ev.target).hasClass("possibleDrop")) {
             return;
         }
-        if  ($(ev.target).hasClass("draggable-drop") && this.hasNoDragChild(ev.target)) {
+        if ($(ev.target).hasClass("draggable-drop") && this.hasNoDragChild(ev.target)) {
             $(ev.target).addClass("possibleDrop");
         }
     }.bind(this));
@@ -338,7 +338,7 @@ DragNDrop.prototype.dragEval = function (logFlag) {
         }
     }
     this.correctNum = this.dragNum - this.incorrectNum - this.unansweredNum;
-    this.setLocalStorage({"correct": (this.correct ? "T" : "F")});
+    this.setLocalStorage({ "correct": (this.correct ? "T" : "F") });
     this.renderFeedback();
     if (logFlag) {  // Sometimes we don't want to log the answers--for example, on re-load of a timed exam
         let answer = this.pregnantIndexArray.join(";");
@@ -404,7 +404,7 @@ DragNDrop.prototype.checkLocalStorage = function () {
             if (this.useRunestoneServices) {
                 // store answer in database
                 var answer = this.pregnantIndexArray.join(";");
-                this.logBookEvent({"event": "dragNdrop", "act": answer, "answer":answer, "minHeight": this.minheight, "div_id": this.divid, "correct": storedObj.correct});
+                this.logBookEvent({ "event": "dragNdrop", "act": answer, "answer": answer, "minHeight": this.minheight, "div_id": this.divid, "correct": storedObj.correct });
             }
         }
     }
@@ -412,6 +412,8 @@ DragNDrop.prototype.checkLocalStorage = function () {
 };
 
 DragNDrop.prototype.setLocalStorage = function (data) {
+    if (!this.isLocalStorageAvailable())
+        return
     if (data.answer === undefined) {   // If we didn't load from the server, we must generate the data
         this.pregnantIndexArray = [];
         for (var i = 0; i < this.dragPairArray.length; i++) {
@@ -429,7 +431,7 @@ DragNDrop.prototype.setLocalStorage = function (data) {
 
     var timeStamp = new Date();
     var correct = data.correct;
-    var storageObj = {"answer": this.pregnantIndexArray.join(";"), "minHeight": this.minheight, "timestamp": timeStamp, "correct": correct};
+    var storageObj = { "answer": this.pregnantIndexArray.join(";"), "minHeight": this.minheight, "timestamp": timeStamp, "correct": correct };
     localStorage.setItem(eBookConfig.email + ":" + this.divid + "-given", JSON.stringify(storageObj));
 };
 
@@ -447,9 +449,9 @@ DragNDrop.prototype.loadData = function () {
 ==   execute our code on them    ==
 =================================*/
 //$(document).bind("runestone:login-complete", function () {
-$(document).ready(function () {    
+$(document).ready(function () {
     $("[data-component=dragndrop]").each(function (index) {
-        var opts = {"orig": this, 'useRunestoneServices':eBookConfig.useRunestoneServices};
+        var opts = { "orig": this, 'useRunestoneServices': eBookConfig.useRunestoneServices };
         if ($(this).closest('[data-component=timedAssessment]').length == 0) {   // If this element exists within a timed component, don't render it here
             ddList[this.id] = new DragNDrop(opts);
         }
@@ -459,4 +461,4 @@ $(document).ready(function () {
 if (typeof component_factory === 'undefined') {
     component_factory = {}
 }
-component_factory['dragndrop'] = function(opts) { return new DragNDrop(opts)}
+component_factory['dragndrop'] = function (opts) { return new DragNDrop(opts) }

@@ -32,7 +32,7 @@ def setup(app):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     app.add_directive('webgldemo', WebglDemo)
 
-    app.add_stylesheet('webgldemo.css')
+    app.add_css_file('webgldemo.css')
 
     app.add_node(WebglDemoNode, html=(visit_webgldemo_node, depart_webgldemo_node))
 
@@ -44,16 +44,16 @@ def setup(app):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     app.add_directive('webglinteractive', WebglInteractive)
 
-    app.add_stylesheet('webglinteractive.css')
+    app.add_css_file('webglinteractive.css')
 
     # CodeMirror syntax highlighting for various types of code
     add_codemirror_css_and_js(app,'xml','css','htmlmixed','javascript')
 
-    app.add_javascript('webglinteractive.js')
+    app.add_js_file('webglinteractive.js')
 
     # Javascript for saving files to the client's hard drive
-    app.add_javascript('FileSaver.min.js')
-    app.add_javascript('Blob.js')
+    app.add_js_file('FileSaver.min.js')
+    app.add_js_file('Blob.js')
 
     app.add_node(WebglInteractiveNode, html=(visit_webglinteractive_node, depart_webglinteractive_node))
 

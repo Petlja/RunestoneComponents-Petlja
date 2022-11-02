@@ -34,9 +34,9 @@ def setup(app):
     acc_style = app.config._raw_config.get('accessibility_style', 'normal')
 
     if acc_style == 'normal':
-        app.add_stylesheet('accessibility.css')
+        app.add_css_file('accessibility.css')
     elif acc_style == 'light':
-        app.add_stylesheet('accessibilitylight.css')
+        app.add_css_file('accessibilitylight.css')
     elif acc_style == 'darkest':
-        app.add_stylesheet('accessibilitydarkest.css')
+        app.add_css_file('accessibilitydarkest.css')
   

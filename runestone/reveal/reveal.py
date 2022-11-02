@@ -23,7 +23,7 @@ from runestone.common.runestonedirective import RunestoneIdDirective, RunestoneN
 def setup(app):
     app.add_directive('reveal', RevealDirective)
 
-    app.add_javascript('reveal.js')
+    app.add_js_file('reveal.js')
 
     app.add_node(RevealNode, html=(visit_reveal_node, depart_reveal_node))
 

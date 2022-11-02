@@ -120,11 +120,11 @@ LineBasedGrader.prototype.grade = function() {
 				feedbackArea.attr("class", "alert alert-success");
 				if (problem.checkCount > 1)
 				{
-				   feedbackArea.html("Perfect!  It took you " + problem.checkCount + " tries to solve this.  Click Reset to try to solve it in one attempt.");
+                    feedbackArea.html($.i18n("msg_parson_correct"));
 			    }
 			    else
 			    {
-			       feedbackArea.html("Perfect!  It took you only one try to solve this.  Great job!");
+                    feedbackArea.html($.i18n("msg_parson_correct"));
 			    }
 				correct = true;
 			} else {
@@ -180,7 +180,7 @@ LineBasedGrader.prototype.grade = function() {
 			for (i = 0; i < notInSolution.length; i++) {
 				$(notInSolution[i].view).addClass("incorrectPosition");
 			}
-			feedbackArea.html("Highlighted blocks in your program are wrong or are in the wrong order. This can be fixed by moving, removing, or replacing highlighted blocks.");
+            feedbackArea.html($.i18n("msg_wrong_order"));
 		}
 	}
 	return state;
@@ -1629,6 +1629,8 @@ Parsons.prototype.checkLocalStorage = function () {
 
 // RunestoneBase: Set the state of the problem in local storage
 Parsons.prototype.setLocalStorage = function(data) {
+	if (!this.isLocalStorageAvailable())
+		return;
 	var toStore;
 	if (data == undefined) {
 		toStore = {
@@ -2216,12 +2218,15 @@ Parsons.prototype.checkMe = function() {
 		var grade = this.grader.grade();
 		if (grade == "correct") {
 			this.hasSolved = true;
-			localStorage.setItem(this.adaptiveId + "Solved", true);
+			if (!this.isLocalStorageAvailable())
+				localStorage.setItem(this.adaptiveId + "Solved", true);
 			this.recentAttempts = this.checkCount;
 			this.checkCount = 0;
-			localStorage.setItem(this.adaptiveId + "recentAttempts", this.recentAttempts);
+			if (!this.isLocalStorageAvailable())
+				localStorage.setItem(this.adaptiveId + "recentAttempts", this.recentAttempts);
 		} 
-		localStorage.setItem(this.adaptiveId + this.divid + "Count", this.checkCount); 
+		if (!this.isLocalStorageAvailable())
+			localStorage.setItem(this.adaptiveId + this.divid + "Count", this.checkCount); 
 
 		this.logAnswer(grade);
 		this.setLocalStorage();
@@ -2298,12 +2303,13 @@ Parsons.prototype.initializeAdaptive = function() {
 	if(this.recentAttempts == undefined || this.recentAttempts == "NaN") {
 		this.recentAttempts = 3;
 	}
-	localStorage.setItem(this.adaptiveId + "recentAttempts", this.recentAttempts);
-	localStorage.setItem(this.adaptiveId + "Problem", this.divid);
-	localStorage.setItem(this.adaptiveId + this.divid + "Count", this.checkCount);
-	localStorage.setItem(this.adaptiveId + "Solved", false);
+	if (!this.isLocalStorageAvailable()){
+		localStorage.setItem(this.adaptiveId + "recentAttempts", this.recentAttempts);
+		localStorage.setItem(this.adaptiveId + "Problem", this.divid);
+		localStorage.setItem(this.adaptiveId + this.divid + "Count", this.checkCount);
+		localStorage.setItem(this.adaptiveId + "Solved", false);
+	}
 };
-
 // Return a boolean of whether the user must deal with indentation
 Parsons.prototype.usesIndentation = function() {
 	if ( this.noindent || this.solutionIndent() == 0) {
