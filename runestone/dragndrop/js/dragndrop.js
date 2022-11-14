@@ -338,7 +338,8 @@ DragNDrop.prototype.dragEval = function (logFlag) {
         }
     }
     this.correctNum = this.dragNum - this.incorrectNum - this.unansweredNum;
-    c_API.registerQuestionsAnswer(this.divid, this.correct, '')
+    if (this.useContentApi)
+        c_API.registerQuestionsAnswer(this.divid, this.correct, '')
     this.setLocalStorage({ "correct": (this.correct ? "T" : "F") });
     this.renderFeedback();
     if (logFlag) {  // Sometimes we don't want to log the answers--for example, on re-load of a timed exam
