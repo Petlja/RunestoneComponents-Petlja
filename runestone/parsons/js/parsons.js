@@ -2216,6 +2216,7 @@ Parsons.prototype.checkMe = function() {
 	    	this.adaptiveId = this.storageId;
 	    }
 		var grade = this.grader.grade();
+		c_API.registerQuestionsAnswer(this.divid, grade, '')
 		if (grade == "correct") {
 			this.hasSolved = true;
 			if (!this.isLocalStorageAvailable())

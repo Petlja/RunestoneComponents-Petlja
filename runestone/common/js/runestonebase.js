@@ -27,7 +27,12 @@ RunestoneBase.prototype.init = function (opts) {
     if (opts.enforceDeadline) {
         this.deadline = opts.deadline;
     }
+    if(this instanceof MultipleChoice ||
+        this instanceof DragNDrop || 
+        this instanceof Parsons || 
+        this instanceof FITB)
 
+        c_API.registerQuestions(opts.orig.id)
 };
 
 RunestoneBase.prototype.logBookEvent = function (eventInfo) {

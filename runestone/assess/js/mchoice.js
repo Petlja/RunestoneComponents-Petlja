@@ -224,11 +224,13 @@ MultipleChoice.prototype.renderMCFormButtons = function () {
     if (this.multipleanswers) {
         this.submitButton.addEventListener("click", function () {
             this.processMCMASubmission(true);
+            c_API.registerQuestionsAnswer(this.divid, this.correct, this.givenAnswer)
         }.bind(this), false);
     } else {
         this.submitButton.addEventListener("click", function (ev) {
             ev.preventDefault();
             this.processMCMFSubmission(true);
+            c_API.registerQuestionsAnswer(this.divid, this.correct, this.givenAnswer)
         }.bind(this), false);
     } // end else
     this.optsForm.appendChild(this.submitButton);
