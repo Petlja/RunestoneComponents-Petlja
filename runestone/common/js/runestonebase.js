@@ -32,7 +32,7 @@ RunestoneBase.prototype.init = function (opts) {
         this instanceof DragNDrop || 
         this instanceof Parsons || 
         this instanceof FITB){
-        if(typeof c_API === 'undefined'){
+        if(typeof c_API !== 'undefined'){
             c_API.registerQuestions(opts.orig.id)
             this.useContentApi = true;
         }
