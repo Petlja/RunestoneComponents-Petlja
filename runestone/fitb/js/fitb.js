@@ -241,6 +241,8 @@ FITB.prototype.evaluateAnswers = function () {
     } else {
         this.correct = false;
     }
+    if (this.useContentApi)
+        c_API.registerQuestionsAnswer(this.divid, this.correct, given)
     this.setLocalStorage({"correct": (this.correct ? "T" : "F")});
 };
 
