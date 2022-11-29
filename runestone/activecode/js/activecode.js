@@ -2740,6 +2740,13 @@ function openPyCanvas() {
 
         div5.appendChild(Sk.main_canvas);
         createArrows(div6);
+        if( window.parent !== window.self){
+            var currentScroll = window.parent.document.documentElement.scrollTop;
+            window.parent.document.documentElement.scrollTop = 0;
+            $(div1).on('hidden.bs.modal', ()=>{
+                window.parent.document.documentElement.scrollTop = currentScroll;
+              })
+        }
         $(div1).modal({
             backdrop: 'static',
             keyboard: false
