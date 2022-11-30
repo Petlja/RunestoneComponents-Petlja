@@ -1,22 +1,4 @@
-function onPlayerStateChange(event) {
-	let rb = new RunestoneBase();
-	let videoTime = event.target.getCurrentTime();
-	let data = {
-		event: 'video',
-		div_id: event.target.getIframe().id,
-	};
-	if (event.data == YT.PlayerState.PLAYING) {
-		console.log('playing ' + event.target.getIframe().id);
-		data.act = 'play:' + videoTime;
-	} else if (event.data == YT.PlayerState.ENDED) {
-		console.log('ended ' + event.target.getIframe().id);
-		data.act = 'complete';
-	} else if (event.data == YT.PlayerState.PAUSED) {
-		console.log('paused at ' + videoTime);
-		data.act = 'pause:' + videoTime;
-	}
-	rb.logBookEvent(data);
-}
+var currentVideoPlaying = [];
 
 window.addEventListener('load',function () {
 	var allVideos = document.getElementsByClassName('ytvideo');
@@ -26,19 +8,14 @@ window.addEventListener('load',function () {
 		var srcValue = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
 		if ($('#modal-' + videoId).length != 0) {
 			if ($('#modal-' + videoId).css('display') == 'none') {
-				document.getElementById('YTmodal-' + videoId).innerHTML = "<iframe id='ytplayer' style='height: 90vh; width: 90vw;' src='" + srcValue + "' allowfullscreen></iframe>";
-				document.getElementById('modal-' + videoId).setAttribute('style', 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(140, 140, 140, 0.3); z-index: 10000;');
+				currentVideoPlaying.push(videoId);
+				document.getElementById(videoId).style.display = 'none';
+				document.getElementById('YTmodal-' + videoId).innerHTML = "<iframe id='ytplayer' style='height: 500px; width: 780px;' src='" + srcValue + "' allowfullscreen></iframe>";
+				document.getElementById('modal-' + videoId).setAttribute('style','background-color: transparent; z-index: 10000;');
 			} else {
+				document.getElementById(videoId).style.display = '';
 				document.getElementById('YTmodal-' + videoId).innerHTML = '';
-				document.getElementById('modal-' + videoId).setAttribute('style', 'display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(140, 140, 140, 0.3); z-index: 10000;');
-			}
-		} else {
-			if ($('#modal').css('display') == 'none') {
-				document.getElementById('YTmodal').innerHTML = "<iframe id='ytplayer' style='height: 90vh; width: 90vw;' src='" + srcValue + "' allowfullscreen></iframe>";
-				document.getElementById('modal').setAttribute('style', 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(140, 140, 140, 0.3); z-index: 10000;');
-			} else {
-				document.getElementById('YTmodal').innerHTML = '';
-				document.getElementById('modal').setAttribute('style', 'display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(140, 140, 140, 0.3); z-index: 10000;');
+				document.getElementById('modal-' + videoId).setAttribute('style', 'display: none; background-color: transparent; z-index: 10000;');
 			}
 		}
 	};
@@ -57,17 +34,15 @@ window.addEventListener('load',function () {
 					}
 				}
 			};
-
 			httpRequest.send();
-			video.addEventListener('click', function () {
+			video.addEventListener('click', function (e) {
 				toggleVideo(video.id);
+				e.stopPropagation();
 			});
 		});
-
-	if (allVideosCloser.length > 0)
-		Array.prototype.slice.call(allVideosCloser).forEach(function (video) {
-			video.addEventListener('click', function () {
-				toggleVideo(video.id.replace('modal-', ''));
-			});
-		});
+	document.body.addEventListener("click", function(){
+		for (var i=0; i<currentVideoPlaying.length;i++)
+			toggleVideo(currentVideoPlaying[i]);
+		currentVideoPlaying = [];
+	})
 });
