@@ -37,6 +37,9 @@ RunestoneBase.prototype.init = function (opts) {
             this.useContentApi = true;
         }
     }
+    if(this instanceof ActiveCode)
+        if(typeof c_API !== 'undefined')
+            this.useContentApi = true;
 };
 
 RunestoneBase.prototype.logBookEvent = function (eventInfo) {
