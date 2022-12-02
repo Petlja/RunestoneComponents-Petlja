@@ -589,7 +589,7 @@ ActiveCode.prototype.createOutput = function () {
     // canvas can be styled in CSS.  Which a the moment means just adding a border.
     $(this.graphics).on("DOMNodeInserted", 'canvas', (function (e) {
         $(this.graphics).addClass("visible-ac-canvas");
-        $(outDiv).css("height", "400px");
+        $(outDiv).css("height", "fit-content");
     }).bind(this));
 
     outDiv.appendChild(this.output);
@@ -2740,6 +2740,12 @@ function openPyCanvas() {
 
         div5.appendChild(Sk.main_canvas);
         createArrows(div6);
+        if( window.parent !== window.self){
+            c_API.showContentModal();
+            $(div1).on('hidden.bs.modal', ()=>{
+                c_API.hideContentModal();
+              })
+        }
         $(div1).modal({
             backdrop: 'static',
             keyboard: false
