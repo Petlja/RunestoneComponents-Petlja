@@ -10,7 +10,7 @@
     font-size: 120%;
     padding-bottom: 10px;
     min-width: 48%;
-    max-width: 48%;
+    max-width: 48% !important;
     border: 1px solid #efefff;
     box-sizing: border-box;
 }
