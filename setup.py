@@ -6,7 +6,7 @@ with open('requirements.txt', 'r') as fh:
 setup(
     name='runestone-petljadoc',
     description='Sphinx extensions for writing interactive documents.',
-    version='3.1.2.3',
+    version='3.1.2.4',
     author = 'Brad Miller',
     author_email = 'bonelake@mac.com',
     packages= find_packages(exclude=['*.*.test']),
