@@ -48,6 +48,10 @@ def visit_mc_node(self,node):
         node.mc_options['multipleAnswers'] = 'true'
     else:
         node.mc_options['multipleAnswers'] = 'false'
+    if('hide_labels' in node.mc_options):
+        node.mc_options['hideLabels'] = 'true'
+    else:
+        node.mc_options['hideLabels'] = 'false'
     node.mc_options['questionType'] = 'qchoice'
     res = node.template_start % node.mc_options
 
@@ -97,6 +101,7 @@ class MChoice(Assessment):
 
     .. mchoice:: uniqueid
         :multiple_answers: [optional]. Implied if ``:correct:`` contains a list.
+        :hide_labels: [optional]
         :random: [optional]
 
         The following arguments supply answers and feedback. See below for an alternative method of specification.
@@ -168,6 +173,7 @@ class MChoice(Assessment):
         'feedback_e':directives.unchanged,
         'random':directives.flag,
         'multiple_answers':directives.flag,
+        'hide_labels':directives.flag,
     })
 
     def run(self):
@@ -186,7 +192,7 @@ class MChoice(Assessment):
                 <div class="petlja-problem-box-icon-holder"> </div>
                 <img src="../_static/img/%(questionType)s-img.svg" class="petlja-problem-image  %(questionType)s-image" />
                 <img src="../_static/img/qchoice-img.svg" class="petlja-problem-image-quiz  qchoice-image" /> 
-            <ul data-component="multiplechoice" data-multipleanswers="%(multipleAnswers)s" %(random)s id="%(divid)s">
+            <ul data-component="multiplechoice" data-multipleanswers="%(multipleAnswers)s" data-hidelabels="%(hideLabels)s" %(random)s id="%(divid)s">
             '''
 
         OPTION = '''
