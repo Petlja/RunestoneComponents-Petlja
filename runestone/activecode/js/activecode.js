@@ -2750,6 +2750,7 @@ function openPyCanvas() {
             backdrop: 'static',
             keyboard: false
         });
+        $('body')[0].classList.remove('modal-open'); // who knows what broke, but this fixes it
     }
     else {
         currentTarget.appendChild(Sk.main_canvas);
