@@ -985,6 +985,11 @@ ActiveCode.prototype.fileReader = function (divid) {
 }
 
 ActiveCode.prototype.outputfun = function (text) {
+    try {
+        text = decodeURIComponent(escape(text));
+    } catch (e) {
+        // ignore if not UTF-8
+    }
     // bnm python 3
     pyStr = function (x) {
         if (x instanceof Array) {
