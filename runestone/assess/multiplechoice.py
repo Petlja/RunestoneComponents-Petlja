@@ -176,6 +176,7 @@ class MChoice(Assessment):
         'hide_labels':directives.flag,
     })
 
+
     def run(self):
         """
             process the multiplechoice directive and generate html for output.
@@ -190,8 +191,8 @@ class MChoice(Assessment):
             <div class="%(divclass)s choice-question">
                 <div class="image-background"></div>
                 <div class="petlja-problem-box-icon-holder"> </div>
-                <img src="../_static/img/%(questionType)s-img.svg" class="petlja-problem-image  %(questionType)s-image" />
-                <img src="../_static/img/qchoice-img.svg" class="petlja-problem-image-quiz  qchoice-image" /> 
+                <img src="../_static/img/%(questionType)s-img.svg" alt="choice-question-icon" class="petlja-problem-image  %(questionType)s-image" />
+                <img src="../_static/img/qchoice-img.svg" alt="choice-question-icon" class="petlja-problem-image-quiz  qchoice-image" /> 
             <ul data-component="multiplechoice" data-multipleanswers="%(multipleAnswers)s" data-hidelabels="%(hideLabels)s" %(random)s id="%(divid)s">
             '''
 

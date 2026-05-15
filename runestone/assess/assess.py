@@ -71,9 +71,12 @@ class AddButton(RunestoneIdDirective):
         TEMPLATE_START = '''
             <div id="%(divid)s" class="test-class alert alert-warning">
             <form name="%(divid)s_form" method="get" action="" onsubmit="return false;">
+                <fieldset>
+                    <legend>%(question_text)s</legend>
             '''
 
         TEMPLATE_END = '''
+                </fieldset>
             <button class='btn btn-inverse' name="reset" onclick="resetPage('%(divid)s')">Forget My Answers</button>
             </form>
             </div>
