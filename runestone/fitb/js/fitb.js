@@ -75,6 +75,9 @@ FITB.prototype.renderFITBInput = function () {
     // Set the class for the text inputs, then store references to them.
     let ba = $(this.containerDiv).find(':input');
     ba.attr('class', 'form form-control selectwidthauto');
+    ba.each((index, input) => {
+        $(input).attr('id', this.divid + "_input_" + index);
+    });
     this.blankArray = ba.toArray();
 };
 
@@ -257,6 +260,13 @@ FITB.prototype.isCompletelyBlank = function () {
 };
 
 FITB.prototype.renderFITBFeedback = function () {
+    
+    $(this.feedBackDiv).attr("role", "alert");
+
+    for (var j = 0; j < this.blankArray.length; j++) {
+        $(this.blankArray[j]).attr("aria-describedby", this.feedBackDiv.id);
+    }
+    
     if (this.correct) {
         $(this.feedBackDiv).attr("class", "alert alert-success");
         for (var j = 0; j < this.blankArray.length; j++) {

@@ -361,15 +361,18 @@ DragNDrop.prototype.renderFeedback = function () {
     if (!this.feedBackDiv) {
         this.renderFeedbackDiv();
     }
+    $(this.containerDiv).attr("aria-describedby", this.feedBackDiv.id);
     this.feedBackDiv.style.display = "block";
     var msgCorrect = $.i18n("msg_dragndrop_correct_answer");
     var msgIncorrect = $.i18n($.i18n("msg_dragndrop_incorrect_answer"), this.correctNum, this.incorrectNum, this.dragNum, this.unansweredNum);
     if (this.correct) {
         $(this.feedBackDiv).html(msgCorrect);
         $(this.feedBackDiv).attr("class", "alert alert-success draggable-feedback");
+         $(this.feedBackDiv).attr("role", "alert");
     } else {
         $(this.feedBackDiv).html(msgIncorrect + " " + this.feedback);
         $(this.feedBackDiv).attr("class", "alert alert-danger draggable-feedback");
+        $(this.feedBackDiv).attr("role", "alert");
     }
 };
 /*===================================
