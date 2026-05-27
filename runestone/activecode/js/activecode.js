@@ -198,9 +198,14 @@ ActiveCode.prototype.init = function (opts) {
 ActiveCode.prototype.createEditor = function (index) {
     this.containerDiv = document.createElement('div');
     var linkdiv = document.createElement('div');
+    var instructionText = $(this.origElem).data('sr-instruction');
+    var instructionId = this.divid + '_sr_instruction';
     linkdiv.id = this.divid.replace(/_/g, '-').toLowerCase();  // :ref: changes _ to - so add this as a target
     $(this.containerDiv).addClass("ac_section alert alert-warning");
     $(this.containerDiv).attr("style", "padding: 0 !important; margin-top: 15px;");
+    if (instructionText) {
+        $(this.containerDiv).attr('aria-describedby', instructionId);
+    }
     var codeDiv = document.createElement("div");
     if (this.code.trim() == '')
         $(codeDiv).attr("style", "display: none;");
@@ -216,6 +221,13 @@ ActiveCode.prototype.createEditor = function (index) {
     if (linkdiv.id !== this.divid) {  // Don't want the 'extra' target if they match.
         this.containerDiv.appendChild(linkdiv);
     }
+    if (instructionText) {
+        var instructionSpan = document.createElement('span');
+        instructionSpan.id = instructionId;
+        instructionSpan.className = 'sr-only';
+        instructionSpan.textContent = instructionText;
+        this.containerDiv.appendChild(instructionSpan);
+    }
     this.containerDiv.appendChild(codeDiv);
     var editor = CodeMirror(codeDiv, {
         value: this.passivecodestr == 'onlymain' ? this.mainSecContent : this.code, lineNumbers: true,
@@ -224,6 +236,9 @@ ActiveCode.prototype.createEditor = function (index) {
         extraKeys: { "Tab": "indentMore", "Shift-Tab": "indentLess" },
         readOnly: this.passivecode
     });
+    if (instructionText) {
+        $(editor.getWrapperElement()).attr('aria-describedby', instructionId);
+    }
 
     if (this.markedText && !this.passivecode) {
         this.lineHandles = [];
@@ -748,12 +763,14 @@ ActiveCode.prototype.createGradeSummary = function () {
         } else {
             body = "<h4>The server did not return any grade information</h4>";
         }
-        var html = '<div class="modal fade">' +
+        var modalId = this.divid + '_grade_summary_modal';
+        var titleId = modalId + '_title';
+        var html = '<div class="modal fade" id="' + modalId + '">' +
             '  <div class="modal-dialog compare-modal">' +
-            '    <div class="modal-content">' +
+            '    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="' + titleId + '" tabindex="-1">' +
             '      <div class="modal-header">' +
             '        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
-            '        <h4 class="modal-title">Assignment Feedback</h4>' +
+            '        <h4 class="modal-title" id="' + titleId + '">Assignment Feedback</h4>' +
             '      </div>' +
             '      <div class="modal-body">' +
             body +
@@ -763,6 +780,7 @@ ActiveCode.prototype.createGradeSummary = function () {
             '</div>';
 
         var el = $(html);
+    bindModalFocusTrap(el, el.find('.modal-content')[0]);
         el.modal();
     };
     var data = { 'div_id': this.divid };
@@ -2579,10 +2597,10 @@ ACFactory.createScratchActivecode = function () {
     // generate the HTML
     var html = '<div id="ac_modal_' + divid + '" class="modal fade">' +
         '  <div class="modal-dialog scratch-ac-modal">' +
-        '    <div class="modal-content">' +
+        '    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="ac_modal_' + divid + '_title" tabindex="-1">' +
         '      <div class="modal-header">' +
         '        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
-        '        <h4 class="modal-title">Scratch ActiveCode</h4>' +
+        '        <h4 class="modal-title" id="ac_modal_' + divid + '_title">Scratch ActiveCode</h4>' +
         '      </div> ' +
         '      <div class="modal-body">' +
         '      <textarea data-component="activecode" id="' + divid + '" data-lang="' + lang + '">' +
@@ -2596,6 +2614,7 @@ ACFactory.createScratchActivecode = function () {
         '</div>';
     var el = $(html);
     $('body').append(el);
+    bindModalFocusTrap(el, el.find('.modal-content')[0]);
 
     el.on('shown.bs.modal show.bs.modal', function () {
         el.find('.CodeMirror').each(function (i, e) {
@@ -2667,6 +2686,15 @@ function createPyCanvas() {
 function openPyCanvas() {
     var currentTarget = resetTarget();
     if (pygameModalUse) {
+        var bindButtonKeyboardActivation = function (button) {
+            $(button).on('keydown', function (event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    $(this).trigger('click');
+                }
+            });
+        };
+
         var div1 = document.createElement("div");
         currentTarget.appendChild(div1);
         $(div1).addClass("modal");
@@ -2675,22 +2703,29 @@ function openPyCanvas() {
 
 
 
-        var btn1 = document.createElement("span");
+        var btn1 = document.createElement("button");
+        btn1.type = "button";
         $(btn1).addClass("btn btn-primary btn-sm float-right mr-1 mt-1");
+        $(btn1).attr("aria-label", "Close program output dialog");
         var ic = document.createElement("i");
         $(ic).addClass("fas fa-times");
+        $(ic).attr("aria-hidden", "true");
         btn1.appendChild(ic);
 
         $(btn1).on('click', function (e) {
             Sk.insertEvent('quit');
             $(forceQBtn).css("display", "block");
         });
+        bindButtonKeyboardActivation(btn1);
 
-        var forceQBtn = document.createElement("span");
+        var forceQBtn = document.createElement("button");
+        forceQBtn.type = "button";
         $(forceQBtn).addClass("btn btn-primary btn-sm float-right mr-1 mt-1");
         $(forceQBtn).css("display", "none");
+        $(forceQBtn).attr("aria-label", "Force close program output dialog");
         var ic = document.createElement("i");
         $(ic).addClass("fas fa-sign-out-alt");
+        $(ic).attr("aria-hidden", "true");
         forceQBtn.appendChild(ic);
 
         $(forceQBtn).on('click', function (e) {
@@ -2698,6 +2733,7 @@ function openPyCanvas() {
             Sk.quitHandler();
             $('.run-button').removeAttr('disabled');
         });
+        bindButtonKeyboardActivation(forceQBtn);
 
         var div2 = document.createElement("div");
         $(div2).addClass("modal-dialog modal-lg");
@@ -2712,6 +2748,9 @@ function openPyCanvas() {
 
         var div3 = document.createElement("div");
         $(div3).addClass("modal-content");
+        $(div3).attr("role", "dialog");
+        $(div3).attr("aria-modal", "true");
+        $(div3).attr("tabindex", "-1");
         $(div3).css("background-color", "#E8E8E8");
         if (screen.width < 900)
             $(div3).height("100%");
@@ -2732,8 +2771,10 @@ function openPyCanvas() {
         var div8 = document.createElement("div");
         $(div8).addClass("col-md-4");
         var header = document.createElement("h5");
+        header.id = "pygame_modal_title";
         $(header).addClass("modal-title float-left ml-1");
         Sk.title_container = header;
+        $(div3).attr("aria-labelledby", header.id);
 
         div3.appendChild(div4);
         div3.appendChild(div5);
@@ -2751,6 +2792,7 @@ function openPyCanvas() {
                 c_API.hideContentModal();
               })
         }
+        bindModalFocusTrap(div1, div3);
         $(div1).modal({
             backdrop: 'static',
             keyboard: false
@@ -2775,16 +2817,124 @@ function resetTarget() {
 }
 
 
+function getModalFocusableElements(modalContent) {
+    return $(modalContent)
+        .find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex], [contenteditable="true"]')
+        .filter(function () {
+            var tabindex = $(this).attr('tabindex');
+            return tabindex !== '-1' && $(this).is(':visible');
+        })
+        .toArray();
+}
+
+
+function getPreferredModalFocusElement(modalContent) {
+    var focusableElements = getModalFocusableElements(modalContent);
+    var preferredElement = focusableElements.find(function (element) {
+        return !$(element).is('.close, [data-dismiss="modal"]');
+    });
+
+    return preferredElement || modalContent;
+}
+
+
+function bindModalFocusTrap(modalElement, modalContent) {
+    var $modal = $(modalElement);
+    var $modalContent = $(modalContent);
+    var namespace = '.activecodeFocusTrap_' + ($modal.attr('id') || Math.random().toString(36).slice(2));
+    var previouslyFocusedElement = document.activeElement;
+
+    if (!$modalContent.attr('tabindex')) {
+        $modalContent.attr('tabindex', '-1');
+    }
+
+    var focusModal = function () {
+        window.setTimeout(function () {
+            getPreferredModalFocusElement(modalContent).focus();
+        }, 0);
+    };
+
+    $modal.on('shown.bs.modal' + namespace, focusModal);
+
+    $(document).on('keydown' + namespace, function (event) {
+        if (!$modal.is(':visible')) {
+            return;
+        }
+
+        if (event.key !== 'Tab') {
+            return;
+        }
+
+        var focusableElements = getModalFocusableElements(modalContent);
+        if (focusableElements.length === 0) {
+            event.preventDefault();
+            $modalContent.focus();
+            return;
+        }
+
+        var activeElement = document.activeElement;
+        var currentIndex = focusableElements.indexOf(activeElement);
+
+        if (!modalContent.contains(activeElement)) {
+            event.preventDefault();
+            (event.shiftKey ? focusableElements[focusableElements.length - 1] : focusableElements[0]).focus();
+            return;
+        }
+
+        event.preventDefault();
+
+        if (currentIndex === -1 || activeElement === modalContent) {
+            (event.shiftKey ? focusableElements[focusableElements.length - 1] : focusableElements[0]).focus();
+            return;
+        }
+
+        var nextIndex = event.shiftKey ? currentIndex - 1 : currentIndex + 1;
+        if (nextIndex < 0) {
+            nextIndex = focusableElements.length - 1;
+        }
+        if (nextIndex >= focusableElements.length) {
+            nextIndex = 0;
+        }
+
+        focusableElements[nextIndex].focus();
+    });
+
+    $(document).on('focusin' + namespace, function (event) {
+        if (!$modal.is(':visible')) {
+            return;
+        }
+
+        if (!modalContent.contains(event.target)) {
+            focusModal();
+        }
+    });
+
+    $modal.on('hidden.bs.modal' + namespace, function () {
+        $(document).off(namespace);
+        $modal.off(namespace);
+
+        if (previouslyFocusedElement && typeof previouslyFocusedElement.focus === 'function') {
+            previouslyFocusedElement.focus();
+        }
+    });
+}
+
+
 function createArrows(div) {
     var arrows = new Array(4);
     var direction = ["left", "right", "up", "down"];
+    var arrowLabels = ["Move left", "Move right", "Move up", "Move down"];
+    var arrowKeyNamespace = '.activecodeArrows';
     $(div).addClass("d-flex justify-content-center");
     for (var i = 0; i < 4; i++) {
-        arrows[i] = document.createElement("span");
+        arrows[i] = document.createElement("button");
+        arrows[i].type = "button";
         div.appendChild(arrows[i]);
         $(arrows[i]).addClass("btn btn-primary btn-arrow");
+        $(arrows[i]).attr("aria-label", arrowLabels[i]);
         var ic = document.createElement("i");
         $(ic).addClass("fas fa-arrow-" + direction[i]);
+        $(ic).attr("aria-hidden", "true");
         $(ic).width(11);
         arrows[i].appendChild(ic);
     }
@@ -2822,7 +2972,7 @@ function createArrows(div) {
     $(arrows[3]).on('mouseup', function () {
         returnIcon(3);
     });
-    $(document).unbind('keydown').bind('keydown', function (e) {
+    $(document).off('keydown' + arrowKeyNamespace).on('keydown' + arrowKeyNamespace, function (e) {
         switch (e.which) {
             case 37:
                 swapIcon(0);
@@ -2838,7 +2988,7 @@ function createArrows(div) {
                 break;
         }
     });
-    $(document).unbind('keyup').bind('keyup', function (e) {
+    $(document).off('keyup' + arrowKeyNamespace).on('keyup' + arrowKeyNamespace, function (e) {
         switch (e.which) {
             case 37:
                 returnIcon(0);

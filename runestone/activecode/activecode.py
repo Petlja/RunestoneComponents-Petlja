@@ -64,7 +64,9 @@ def setup(app):
 
 
 TEMPLATE_START = """
-<div data-childcomponent="%(divid)s" class="%(divclass)s">
+<div data-childcomponent="%(divid)s" class="%(divclass)s" role="region" aria-label="Program testing area" aria-describedby="%(divid)s_program_testing_area %(divid)s_program_testing_instructions">
+<span id="%(divid)s_program_testing_area" class="sr-only">Program testing area</span>
+<span id="%(divid)s_program_testing_instructions" class="sr-only">%(sr_instruction)s</span>
 """
 
 TEMPLATE_END = """
@@ -72,7 +74,7 @@ TEMPLATE_END = """
     %(hidecode)s %(include)s %(timelimit)s %(coach)s %(codelens)s %(enabledownload)s %(chatcodes)s
     data-audio='%(ctext)s' %(sourcefile)s %(datafile)s %(stdin)s
     %(cargs)s %(largs)s %(rargs)s %(iargs)s %(gradebutton)s %(caption)s %(runortest)s %(playtask)s %(help)s %(passivecode)s %(modaloutput)s %(hidehistory)s
-    %(includesrc)s %(includehsrc)s %(includexsrc)s %(enablecopy)s>
+    %(includesrc)s %(includehsrc)s %(includexsrc)s %(enablecopy)s data-sr-instruction="%(sr_instruction)s">
 %(initialcode)s
 </textarea>
 </div>
@@ -89,6 +91,27 @@ html_escape_table = {
 def html_escape(text):
     """Produce entities within text."""
     return "".join(html_escape_table.get(c,c) for c in text)
+
+
+def build_sr_instruction(options):
+    if options.get('passivecode') and options.get('passivecode') != 'onlymain':
+        instruction = 'Read the code example in this editor. This content is read only.'
+    elif options.get('playtask'):
+        instruction = 'Add the missing code in the editor, then activate Play task to run the hidden program behavior.'
+    elif options.get('runortest'):
+        instruction = 'Add or change code in the editor, then activate Run to execute the program or Test to run the checks.'
+    elif options.get('help') or options.get('passivecode') == 'onlymain':
+        instruction = 'Add the missing code in the editable section, then activate Run to execute the program.'
+    else:
+        instruction = 'Edit the code in the editor, then activate Run to execute the program.'
+
+    if options.get('hidecode'):
+        instruction = 'Activate Show code to reveal the editor. ' + instruction
+
+    if options.get('modaloutput'):
+        instruction += ' Program output opens in a dialog.'
+
+    return instruction
 
 class ActivcodeNode(nodes.General, nodes.Element, RunestoneNode):
     def __init__(self, content, **kwargs):
@@ -394,6 +417,8 @@ config values (conf.py):
             self.options['gradebutton'] = ''
         else:
             self.options['gradebutton'] = "data-gradebutton=true"
+
+        self.options['sr_instruction'] = html_escape(build_sr_instruction(self.options))
 
         self.options['divclass'] = env.config.activecode_div_class
         if env.config.activecode_hide_load_history:
