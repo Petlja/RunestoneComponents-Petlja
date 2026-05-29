@@ -70,6 +70,7 @@ TEMPLATE_START = """
 """
 
 TEMPLATE_END = """
+<label for="%(divid)s" class="sr-only">%(sr_instruction)s</label>
 <textarea data-component="activecode" id=%(divid)s data-lang="%(language)s" %(autorun)s
     %(hidecode)s %(include)s %(timelimit)s %(coach)s %(codelens)s %(enabledownload)s %(chatcodes)s
     data-audio='%(ctext)s' %(sourcefile)s %(datafile)s %(stdin)s

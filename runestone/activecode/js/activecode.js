@@ -48,6 +48,8 @@ ActiveCode.prototype.init = function (opts) {
     this.codecoach = null;
     this.codelens = null;
     this.controlDiv = null;
+    this.copyAlert = null;
+    this.completionStatus = null;
     this.historyScrubber = null;
     this.timestamps = ["Original"];
     this.autorun = $(orig).data('autorun');
@@ -480,6 +482,7 @@ ActiveCode.prototype.createControls = function () {
     if (this.enablecopy) {
         var button = document.createElement("button");
         $(button).addClass("btn btn-success btn-copy float-right");
+        $(button).attr("aria-label", "Copy code to clipboard");
         $(button).text($.i18n("msg_activecode_copy"));
         $(button).on('click', (function () {
             var $tempInput = $("<textarea>");
@@ -487,6 +490,25 @@ ActiveCode.prototype.createControls = function () {
             $tempInput.val(this.editor.getValue()).select();
             document.execCommand("copy");
             $tempInput.remove();
+
+            if (this.copyAlert) {
+                $(this.copyAlert).remove();
+                this.copyAlert = null;
+            }
+
+            var copyAlert = document.createElement("span");
+            copyAlert.className = 'ac-copy-alert';
+            copyAlert.setAttribute('role', 'alert');
+            copyAlert.textContent = 'Code copied to clipboard.';
+            this.copyAlert = copyAlert;
+            ctrlDiv.appendChild(copyAlert);
+
+            setTimeout((function () {
+                if (this.copyAlert === copyAlert) {
+                    $(copyAlert).remove();
+                    this.copyAlert = null;
+                }
+            }).bind(this), 4000);
         }).bind(this));
         ctrlDiv.appendChild(button);
     }
@@ -589,6 +611,17 @@ ActiveCode.prototype.createOutput = function () {
     // Create a parent div with two elements:  pre for standard output and a div
     // to hold turtle graphics output.  We use a div in case the turtle changes from
     // using a canvas to using some other element like svg in the future.
+    if (this.runortest || this.playtask || $(this.origElem).data('gradebutton')) {
+        var completionStatus = document.createElement("div");
+        completionStatus.id = this.divid + '_completion_status';
+        completionStatus.className = 'alert alert-success';
+        completionStatus.setAttribute('role', 'status');
+        completionStatus.setAttribute('aria-live', 'polite');
+        $(completionStatus).css('display', 'none');
+        this.outerDiv.appendChild(completionStatus);
+        this.completionStatus = completionStatus;
+    }
+
     var outDiv = document.createElement("div");
     $(outDiv).addClass("ac_output col-md-12");
     this.outDiv = outDiv;
@@ -639,6 +672,19 @@ ActiveCode.prototype.createOutput = function () {
         this.canvasDiv = canvasDiv;
         this.canvasDiv.id = this.divid + "_canvas";
     }
+};
+
+ActiveCode.prototype.updateCompletionStatus = function (message) {
+    if (!this.completionStatus) {
+        return;
+    }
+
+    if (!message) {
+        $(this.completionStatus).hide().text('');
+        return;
+    }
+
+    $(this.completionStatus).text(message).show();
 };
 
 ActiveCode.prototype.disableSaveLoad = function () {
@@ -828,6 +874,7 @@ ActiveCode.prototype.showCodelens = function () {
     var embedUrlStr = $.param.fragment(srcURL, myVars, 2 /* clobber all */);
     var myIframe = document.createElement('iframe');
     myIframe.setAttribute("id", this.divid + '_codelens');
+    myIframe.setAttribute("title", "CodeLens visualization showing step-by-step program execution.");
     myIframe.setAttribute("width", "800");
     myIframe.setAttribute("height", "500");
     myIframe.setAttribute("style", "display:block; max-width: 100%; max-height: 100%;");
@@ -1201,6 +1248,7 @@ ActiveCode.prototype.runProg = function (params = [ActiveCode.prototype.BUILD_TY
     var saveCode = "True";
     var scrubber_dfd, history_dfd, skulpt_run_dfd;
     console.log("starting a new run of " + this.divid);
+    this.updateCompletionStatus(null);
     $(this.output).text('');
     if (this.runortest) {
         $(this.output).css("visibility", "hidden");
@@ -1369,6 +1417,7 @@ def _call_event_handler(handle_event, event):
             'prefix': this.pretext,
             'suffix': this.suffix
         }); // Log the run event
+        this.updateCompletionStatus('Program ran without errors.');
     }).bind(this),
         (function (err) {  // fail
             $(self.runButton).removeAttr('disabled');
@@ -1397,6 +1446,7 @@ def _call_event_handler(handle_event, event):
                 'prefix': self.pretext,
                 'suffix': self.suffix
             }); // Log the run event
+            this.updateCompletionStatus(null);
             if (err.toString().indexOf("force-quit") == -1)
                 self.addErrorMessage(err);
             Sk.builtin.KeyboardInterrupt = null;
@@ -2603,6 +2653,7 @@ ACFactory.createScratchActivecode = function () {
         '        <h4 class="modal-title" id="ac_modal_' + divid + '_title">Scratch ActiveCode</h4>' +
         '      </div> ' +
         '      <div class="modal-body">' +
+        '      <label for="' + divid + '" class="sr-only">Edit the code in the editor, then activate Run to execute the program.</label>' +
         '      <textarea data-component="activecode" id="' + divid + '" data-lang="' + lang + '">' +
         '\n' +
         '\n' +
@@ -2674,6 +2725,8 @@ $(document).bind("runestone:logout", function () {
 
 function createPyCanvas() {
     Sk.main_canvas = document.createElement("canvas");
+    Sk.main_canvas.setAttribute("role", "img");
+    Sk.main_canvas.setAttribute("aria-label", "Program output canvas showing the visual result of the running code.");
     Sk.quitHandler = function () {
         $('.modal').modal('hide');
         if (typeof PygameLib !== 'undefined')
