@@ -238,6 +238,15 @@ ActiveCode.prototype.createEditor = function (index) {
         extraKeys: { "Tab": "indentMore", "Shift-Tab": "indentLess" },
         readOnly: this.passivecode
     });
+    var editorInput = editor.getInputField ? editor.getInputField() : null;
+    if (editorInput) {
+        editorInput.id = this.divid + '_editor';
+        editorInput.name = this.divid + '_editor';
+        editorInput.setAttribute('aria-label', instructionText || 'Code editor');
+        if (instructionText) {
+            editorInput.setAttribute('aria-describedby', instructionId);
+        }
+    }
     if (instructionText) {
         $(editor.getWrapperElement()).attr('aria-describedby', instructionId);
     }
@@ -2600,13 +2609,19 @@ ACFactory.createActiveCode = function (orig, lang, addopts) {
 
 // used by web2py controller(s)
 ACFactory.addActiveCodeToDiv = function (outerdivid, acdivid, sid, initialcode, language) {
-    var thepre, newac;
+    var thepre, newac, label;
 
     var acdiv = document.getElementById(acdivid);
     $(acdiv).empty();
+    label = document.createElement("label");
+    label.className = "sr-only";
+    label.htmlFor = outerdivid;
+    label.textContent = "Edit the code in the editor, then activate Run to execute the program.";
+    $(acdiv).append(label);
     thepre = document.createElement("textarea");
     thepre['data-component'] = "activecode";
     thepre.id = outerdivid;
+    thepre.name = outerdivid;
     $(thepre).data('lang', language);
     $(acdiv).append(thepre);
     var opts = { 'orig': thepre, 'useRunestoneServices': true };
@@ -2654,7 +2669,7 @@ ACFactory.createScratchActivecode = function () {
         '      </div> ' +
         '      <div class="modal-body">' +
         '      <label for="' + divid + '" class="sr-only">Edit the code in the editor, then activate Run to execute the program.</label>' +
-        '      <textarea data-component="activecode" id="' + divid + '" data-lang="' + lang + '">' +
+        '      <textarea data-component="activecode" id="' + divid + '" name="' + divid + '" data-lang="' + lang + '">' +
         '\n' +
         '\n' +
         '\n' +
