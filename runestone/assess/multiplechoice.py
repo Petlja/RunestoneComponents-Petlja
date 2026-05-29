@@ -197,7 +197,7 @@ class MChoice(Assessment):
             '''
 
         OPTION = '''
-            <li data-component="answer" %(is_correct)s id="%(divid)s_opt_%(alabel)s">%(atext)s</li><li data-component="feedback" id="%(divid)s_opt_%(alabel)s">%(feedtext)s</li>
+            <li data-component="answer" %(is_correct)s id="%(divid)s_opt_%(alabel)s">%(atext)s</li><li data-component="feedback" id="%(divid)s_opt_%(alabel)s_feedback" for="%(divid)s_opt_%(alabel)s">%(feedtext)s</li>
             '''
 
         TEMPLATE_END = '''
@@ -342,7 +342,7 @@ def visit_feedback_list_item(self, node):
     mcNode = answer_list_item.parent.parent
     label = chr(answer_list_item.parent.index(answer_list_item) + ord('a'))
     mcNode.mc_options['alabel'] = label
-    self.body.append('</li><li data-component="feedback" id="%(divid)s_opt_%(alabel)s">\n' % mcNode.mc_options)
+    self.body.append('</li><li data-component="feedback" id="%(divid)s_opt_%(alabel)s_feedback" for="%(divid)s_opt_%(alabel)s">\n' % mcNode.mc_options)
 
 def depart_feedback_list_item(self, node):
     self.body.append('</li>')

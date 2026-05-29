@@ -151,7 +151,8 @@ MultipleChoice.prototype.renderMCForm = function () {
     $(this.optsForm).attr({
         "method": "get",
         "action": "",
-        "onsubmit": "return false;"
+        "onsubmit": "return false;",
+        "aria-describedby": this.divid + "_feedback"
     });
 
     // generate form options
