@@ -3,6 +3,50 @@ var currentVideoPlaying = [];
 window.addEventListener('load',function () {
 	var allVideos = document.getElementsByClassName('ytvideo');
 	var allVideosCloser = document.getElementsByClassName('ytvideoclose');
+	var activeFocusTrapId = null;
+
+	var keepFocusInModal = function (event) {
+		if (!activeFocusTrapId) {
+			return;
+		}
+
+		var modalContent = document.getElementById('YTmodal-' + activeFocusTrapId);
+		if (!modalContent || !modalContent.offsetParent) {
+			return;
+		}
+
+		if (!modalContent.contains(event.target)) {
+			var iframe = modalContent.querySelector('iframe');
+			if (iframe) {
+				iframe.focus();
+			} else {
+				modalContent.focus();
+			}
+		}
+	};
+
+	var enableFocusTrap = function (videoId) {
+		var modalContent = document.getElementById('YTmodal-' + videoId);
+		var iframe = modalContent.querySelector('iframe');
+
+		activeFocusTrapId = videoId;
+		document.addEventListener('focusin', keepFocusInModal);
+
+		if (iframe) {
+			iframe.focus();
+		} else {
+			modalContent.focus();
+		}
+	};
+
+	var disableFocusTrap = function (videoId) {
+		if (activeFocusTrapId !== videoId) {
+			return;
+		}
+
+		activeFocusTrapId = null;
+		document.removeEventListener('focusin', keepFocusInModal);
+	};
 
 	var toggleVideo = function (videoId) {
 		var srcValue = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
@@ -12,7 +56,9 @@ window.addEventListener('load',function () {
 				document.getElementById(videoId).style.display = 'none';
 				document.getElementById('YTmodal-' + videoId).innerHTML = "<iframe id='ytplayer' style='height: 500px; width: 780px;' src='" + srcValue + "' allowfullscreen></iframe>";
 				document.getElementById('modal-' + videoId).setAttribute('style','background-color: transparent; z-index: 10000;');
+				enableFocusTrap(videoId);
 			} else {
+				disableFocusTrap(videoId);
 				document.getElementById(videoId).style.display = '';
 				document.getElementById('YTmodal-' + videoId).innerHTML = '';
 				document.getElementById('modal-' + videoId).setAttribute('style', 'display: none; background-color: transparent; z-index: 10000;');

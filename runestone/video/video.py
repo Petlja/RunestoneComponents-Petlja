@@ -302,15 +302,15 @@ class YtPopUp(IframeVideo):
    :http: http
    """
     html = '''
-    <div  id="%(video_id)s" class="ytvideo"  style="text-align: center; margin: 15px; cursor:pointer;">
+    <div  id="%(video_id)s" class="ytvideo" role="dialog" aria-modal="true" style="text-align: center; margin: 15px; cursor:pointer;">
         <div style="background-image: url('https://img.youtube.com/vi/%(video_id)s/mqdefault.jpg'); background-repeat: no-repeat;background-position: center; height: 210px; width: 310px; margin: 0 auto; border: 1px solid #20c997">
-            <img src="../_static/images/play_button.svg" style="margin-top: 78px;" /> 
+            <img src="../_static/images/play_button.svg" style="margin-top: 78px;" role="button" tabindex="0"/> 
         </div>
       
 
         </div>
     <div id="modal-%(video_id)s" class="ytvideoclose" style="display: none; background-color: transparent; z-index: 10000;">
-        <div style="background-color: white; position: relative; width:  780px; height:  500px; z-index: 100;" id="YTmodal-%(video_id)s">
+        <div style="background-color: white; position: relative; width:  780px; height:  500px; z-index: 100;" id="YTmodal-%(video_id)s" role="dialog" aria-modal="true" tabindex="-1">
         </div>
     </div>
     
