@@ -151,7 +151,8 @@ MultipleChoice.prototype.renderMCForm = function () {
     $(this.optsForm).attr({
         "method": "get",
         "action": "",
-        "onsubmit": "return false;"
+        "onsubmit": "return false;",
+        "aria-describedby": this.divid + "_feedback"
     });
 
     // generate form options
@@ -180,6 +181,16 @@ MultipleChoice.prototype.renderMCFormOpts = function () {
     if (this.random) {
         this.randomizeAnswers();
     }
+    var fieldset = document.createElement("fieldset");
+
+    var legend = document.createElement("legend");
+    legend.className = "sr-only";
+
+    var questionText = $(this.containerDiv).find("p").first().text();
+
+    legend.textContent = questionText;
+
+    fieldset.appendChild(legend);
 
     for (var j = 0; j < this.answerList.length; j++) {
         var k = this.indexArray[j];
@@ -192,6 +203,7 @@ MultipleChoice.prototype.renderMCFormOpts = function () {
         input.value = String(k);
         input.id = optid;
 
+        input.setAttribute("aria-describedby", this.divid + "_feedback");
         // Create the label for the input
         var label = document.createElement("label");
         var labelspan = document.createElement("span");
@@ -209,11 +221,11 @@ MultipleChoice.prototype.renderMCFormOpts = function () {
         this.optionArray.push(optObj);
 
         // add the option to the form
-        this.optsForm.appendChild(label);
-        this.optsForm.appendChild(document.createElement("br"));
-
-
+        fieldset.appendChild(label);
+        fieldset.appendChild(document.createElement("br"));
     }
+
+    this.optsForm.appendChild(fieldset);
 };
 
 MultipleChoice.prototype.renderMCFormButtons = function () {
@@ -458,9 +470,11 @@ MultipleChoice.prototype.renderMCMAFeedBack = function () {
     if (this.correct) {
         $(this.feedBackDiv).html(feedbackText);
         $(this.feedBackDiv).attr("class", "alert alert-success");
+        $(this.feedBackDiv).attr("role", "alert");
     } else {
         $(this.feedBackDiv).html(feedbackText);
         $(this.feedBackDiv).attr("class", "alert alert-danger");
+        $(this.feedBackDiv).attr("role", "alert");
     }
 };
 
@@ -500,12 +514,14 @@ MultipleChoice.prototype.renderMCMFFeedback = function (correct, feedbackText) {
     if (correct) {
         $(this.feedBackDiv).html(feedbackText);
         $(this.feedBackDiv).attr("class", "alert alert-success");
+        $(this.feedBackDiv).attr("role", "alert");
     } else {
         if (feedbackText == null) {
             feedbackText = "";
         }
         $(this.feedBackDiv).html(feedbackText);
         $(this.feedBackDiv).attr("class", "alert alert-danger");
+        $(this.feedBackDiv).attr("role", "alert");
     }
 };
 

@@ -176,6 +176,7 @@ class MChoice(Assessment):
         'hide_labels':directives.flag,
     })
 
+
     def run(self):
         """
             process the multiplechoice directive and generate html for output.
@@ -190,13 +191,13 @@ class MChoice(Assessment):
             <div class="%(divclass)s choice-question">
                 <div class="image-background"></div>
                 <div class="petlja-problem-box-icon-holder"> </div>
-                <img src="../_static/img/%(questionType)s-img.svg" class="petlja-problem-image  %(questionType)s-image" />
-                <img src="../_static/img/qchoice-img.svg" class="petlja-problem-image-quiz  qchoice-image" /> 
+                <img src="../_static/img/%(questionType)s-img.svg" alt="choice-question-icon" class="petlja-problem-image  %(questionType)s-image" />
+                <img src="../_static/img/qchoice-img.svg" alt="choice-question-icon" class="petlja-problem-image-quiz  qchoice-image" /> 
             <ul data-component="multiplechoice" data-multipleanswers="%(multipleAnswers)s" data-hidelabels="%(hideLabels)s" %(random)s id="%(divid)s">
             '''
 
         OPTION = '''
-            <li data-component="answer" %(is_correct)s id="%(divid)s_opt_%(alabel)s">%(atext)s</li><li data-component="feedback" id="%(divid)s_opt_%(alabel)s">%(feedtext)s</li>
+            <li data-component="answer" %(is_correct)s id="%(divid)s_opt_%(alabel)s">%(atext)s</li><li data-component="feedback" id="%(divid)s_opt_%(alabel)s_feedback" for="%(divid)s_opt_%(alabel)s">%(feedtext)s</li>
             '''
 
         TEMPLATE_END = '''
@@ -341,7 +342,7 @@ def visit_feedback_list_item(self, node):
     mcNode = answer_list_item.parent.parent
     label = chr(answer_list_item.parent.index(answer_list_item) + ord('a'))
     mcNode.mc_options['alabel'] = label
-    self.body.append('</li><li data-component="feedback" id="%(divid)s_opt_%(alabel)s">\n' % mcNode.mc_options)
+    self.body.append('</li><li data-component="feedback" id="%(divid)s_opt_%(alabel)s_feedback" for="%(divid)s_opt_%(alabel)s">\n' % mcNode.mc_options)
 
 def depart_feedback_list_item(self, node):
     self.body.append('</li>')

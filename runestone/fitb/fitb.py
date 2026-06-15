@@ -134,8 +134,8 @@ class FillInTheBlank(RunestoneIdDirective):
         <div class="%(divclass)s fitb-question">
         <div class="image-background"></div>
         <div class="petlja-problem-box-icon-holder"> </div>
-        <img src="../_static/img/%(questionType)s-img.svg" class="petlja-problem-image  %(questionType)s-image" /> 
-        <img src="../_static/img/qchoice-img.svg" class="petlja-problem-image-quiz  qchoice-image" /> 
+        <img src="../_static/img/%(questionType)s-img.svg" alt="questionmark-icon" class="petlja-problem-image  %(questionType)s-image" /> 
+        <img src="../_static/img/qchoice-img.svg" alt="questionmark-icon" class="petlja-problem-image-quiz  qchoice-image" /> 
         
         <div data-component="fillintheblank" id="%(divid)s">
             '''
