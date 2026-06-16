@@ -304,7 +304,9 @@ class YtPopUp(IframeVideo):
     html = '''
     <div  id="%(video_id)s" class="ytvideo" role="dialog" aria-modal="true" style="text-align: center; margin: 15px; cursor:pointer;">
         <div style="background-image: url('https://img.youtube.com/vi/%(video_id)s/mqdefault.jpg'); background-repeat: no-repeat;background-position: center; height: 210px; width: 310px; margin: 0 auto; border: 1px solid #20c997">
-            <img src="../_static/images/play_button.svg" style="margin-top: 78px;" role="button" tabindex="0"/> 
+            <button type="button" aria-label="Play video" style="margin-top: 78px; padding: 0; border: 0; background: transparent; cursor: pointer;">
+                <img src="../_static/images/play_button.svg" alt=""/>
+            </button>
         </div>
       
 
